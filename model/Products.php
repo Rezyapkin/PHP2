@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use app\engine\Db;
-
 class Products extends Model
 {
 

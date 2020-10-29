@@ -15,7 +15,6 @@ abstract class Model implements IModel
 
     public function first($id)
     {
-
         $tableName = static::getTableName();
         $sql = "SELECT * FROM {$tableName} WHERE id = {$id}";
         return self::queryOne($sql);
