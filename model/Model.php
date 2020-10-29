@@ -7,25 +7,26 @@ use app\engine\Db;
 
 abstract class Model implements IModel
 {
-    protected $db;
-
-
-    public function __construct(Db $db)
+    use Db;
+    
+    public function __construct()
     {
-        $this->db = $db;
     }
 
     public function first($id)
     {
-        $sql = "SELECT * FROM {$this->getTableName()} WHERE id = {$id}";
-        return $this->db->queryOne($sql);
+
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM {$tableName} WHERE id = {$id}";
+        return self::queryOne($sql);
     }
 
-    public function get()
+    public static function get()
     {
-        $sql = "SELECT * FROM {$this->getTableName()}";
-        return $this->db->queryAll($sql);
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM {$tableName}";
+        return self::queryAll($sql);
     }
 
-    abstract public function getTableName();
+    abstract public static function getTableName();
 }

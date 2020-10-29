@@ -2,14 +2,14 @@
 
 namespace app\engine;
 
-class Db
+trait Db
 {
-    public function queryOne($sql) {
+    protected static function queryOne($sql) {
         //выполняем $sql
         return $sql . "<br>";
     }
 
-    public function queryAll($sql) {
+    protected static function queryAll($sql) {
         return $sql . "<br>";
     }
 
