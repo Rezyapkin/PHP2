@@ -2,6 +2,7 @@
 
 use app\model\{Products, Users};
 use app\engine\{Autoload};
+use app\model\task3 as task3;
 include "../config/config.php";
 include "../engine/Autoload.php";
 
@@ -22,3 +23,17 @@ echo $product->first(5);
 echo Users::get();
 
 var_dump($product);
+
+/*
+Про digital товар не понял суть сущности, но думаю что на двух разновидностях показал то, что разобрался немного!)))
+Начал читать PHP7 Котерова и Симдянова, очень интересное "чтиво")))
+*/
+
+$product1 = new task3\QtyProducts('Ноутбук Asus',40000,4);
+$product2 = new task3\UnitProducts('Ноутбук на вес',50000,2,'кг');
+$product3 = new task3\UnitProducts('Ноутбук на вес',50000,100,'г');
+
+echo $product1->getTemplate();
+echo $product2->getTemplate();
+echo $product3->getTemplate();
+echo task3\Products::getTotalTemplate();
