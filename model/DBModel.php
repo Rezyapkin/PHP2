@@ -16,20 +16,26 @@ abstract class DBModel extends Model
         return call_user_func_array([$instance, $method], $parameters);
     }
 
-    public function first($id)
+    public function __call($method, $parameters)
+    {
+     
+        return call_user_func_array([$this, $method], $parameters);
+    }
+
+    protected function first($id)
     {
         $sql = "SELECT * FROM {$this->getTableName()} WHERE id = :id";
 
         return Db::getInstance()->queryObject($sql, ['id' => $id], static::class);
     }
 
-    public function get()
+    protected function get()
     {
         $sql = "SELECT * FROM {$this->getTableName()}";
         return Db::getInstance()->queryAll($sql);
     }
 
-    public static function getLimit($page) {
+    protected function getLimit($page) {
         $tableName = static::getTableName();
         $sql = "SELECT * FROM {$this->getTableName()} LIMIT 0, :page";
         return Db::getInstance()->queryLimit($sql, ['page' => $page]);

@@ -10,10 +10,10 @@ class Products extends DBModel
     protected $description;
     protected $price;
 
-    protected public $props = [
+    protected $props = [
             'name' => false,
             'description' => false,
-            'price' => false,
+            'price' => false
     ];
 
 
