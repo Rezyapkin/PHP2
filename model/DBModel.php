@@ -81,6 +81,7 @@ abstract class DBModel extends Model
             'connector' => $connector
         ];
 
+
         $result = clone $this;
         array_pop($this->where);
 
@@ -173,7 +174,7 @@ abstract class DBModel extends Model
             }
             $param_name = "W_{$index}";
             $where_str .= sprintf(" %s `{$where_one['field']}` {$where_one['operator']} :{$param_name}",
-                ($where_str == "") ? "" : (($where_one['operator'] = "OR") ? "OR" : "AND")
+                ($where_str == "") ? "" : (($where_one['connector'] == "OR") ? "OR" : "AND")
             );
             $query_params[$param_name] = $where_one["value"];
             $index++;
@@ -244,8 +245,6 @@ abstract class DBModel extends Model
                 $sets[] = "`{$key}` = :{$key}";
             }    
         }
-        var_dump($sets);
-        var_dump($params);
 
         $id = $this->$id_name;
 
@@ -256,7 +255,7 @@ abstract class DBModel extends Model
         $set_str = implode(", ", $sets);
 
         $sql = "UPDATE {$this->getTableName()} SET {$set_str} WHERE {$id_name} = '{$id}'";
-        var_dump($sql);
+
         if (Db::getInstance()->execute($sql, $params)) {
             $this->clearProps();
         }
