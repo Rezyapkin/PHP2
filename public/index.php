@@ -11,7 +11,6 @@ include "../engine/Autoload.php";
 spl_autoload_register([new Autoload(), 'loadClass']);
 
 
-
 $controllerName = $_GET['c'] ?: 'product';
 $actionName = $_GET['a'];
 
@@ -25,6 +24,7 @@ if (class_exists($controllerClass)) {
 }
 
 
+//var_dump(Products::where('price',"<",50000)->orderBy('price DESC')->get());
 
 die();
 

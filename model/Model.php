@@ -6,6 +6,18 @@ use app\engine\Db;
 
 abstract class Model
 {
+    //Уйдем от статики таким способом:
+    public static function __callStatic($method, $parameters)
+    {
+        $instance = new static;
+     
+        return call_user_func_array([$instance, $method], $parameters);
+    }
+
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this, $method], $parameters);
+    }
 
     public function __set($name, $value) {
         if (array_key_exists($name, $this->props)) {
@@ -16,7 +28,7 @@ abstract class Model
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->props)) {
+        if ($this->isProperties($name)) {
             return $this->$name;
         }              
     }
