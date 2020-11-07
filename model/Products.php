@@ -3,7 +3,7 @@
 namespace app\model;
 
 
-class Products extends DBModel
+class Products extends QueryDBModel
 {
     protected $id;
     protected $name;
