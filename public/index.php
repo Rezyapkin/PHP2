@@ -4,6 +4,7 @@ include "../config/config.php";
 use app\engine\Autoload;
 use app\engine\Route;
 include ROOT_DIR . "/engine/Autoload.php";
+require_once '../vendor/autoload.php';
 spl_autoload_register([new Autoload(), 'loadClass']);
 
 

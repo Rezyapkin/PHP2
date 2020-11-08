@@ -4,6 +4,7 @@
 namespace app\controllers;
 
 use app\interfaces\IController;
+use app\interfaces\IRenderer;
 
 
 class Controller implements IController
@@ -12,6 +13,18 @@ class Controller implements IController
     protected $defaultAction = 'index';
     protected $layout = 'main';
     protected $useLayout = true;
+
+    protected $renderer;
+
+    /**
+     * Controller constructor.
+     * @param $action
+     */
+    public function __construct(IRenderer $renderer)
+    {
+         $this->renderer = $renderer;
+    }
+
 
     public function errorAction() {
         header('HTTP/1.0 404 Not Found');
@@ -30,13 +43,9 @@ class Controller implements IController
         }
     }
 
+
     public function renderTemplate($template, $params = []) {
-        ob_start();
-        extract($params);
-        $templatePath = TEMPLATE_DIR . $template . ".php";
-        if (file_exists($templatePath)) {
-            include $templatePath;
-        }
-        return ob_get_clean();
+        return $this->renderer->renderTemplate($template, $params);
     }
+
 }

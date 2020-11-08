@@ -4,6 +4,14 @@
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+ul {
+    padding-left: 20px;
+}
+
+li {
+    margin-left: 10px;
+}
+
 .product-item {
     margin-bottom: 20px;
     margin-right: 20px;

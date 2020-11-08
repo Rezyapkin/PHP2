@@ -38,6 +38,7 @@ class Route
         $controllerName = CONTROLLER_NAMESPACE . 'Controller';
         $method = 'errorAction';
         $params = [];
+        $rendererName = ENGINE_NAMESPACE . DEFAULT_RENDERER;
 
         $uri = explode('?',$_SERVER['REQUEST_URI'])[0];
 
@@ -64,30 +65,35 @@ class Route
 
                 $controllerName = $route['controller'];
                 $method = $route['controller_method'];
+
                 break;
             }
         }
 
-        $controller = new $controllerName;
+        //Костыль - просто сделаю пока только для главной Twig
+        if ($controllerName != 'app\controllers\SimplePageController') {
+            $rendererName = ENGINE_NAMESPACE . 'Render';
+        }
+        $controller = new $controllerName(new $rendererName());
         echo $controller->$method($params);
 
     }
 
-    protected function mutch($methods, $uri, $controllerAndMethod) {
+    protected function mutch($methods, $uri, $controllerAndMethod, $renderer = '') {
         foreach ($methods as $method) {
             $ar = explode('.', $controllerAndMethod);
             if (count($ar) != 2) {
-                throw new \Exeption('Верный формат последнего параметра: Controller.Method');
+                throw new \Exception('Верный формат последнего параметра: Controller.Method');
             }
 
             $controllerClass = CONTROLLER_NAMESPACE . ucfirst($ar[0]) . "Controller";
             if (!class_exists($controllerClass)) {
-                throw new \Exeption("Ошибка, контроллер {$controllerClass} не существует.");
+                throw new \Exception("Ошибка, контроллер {$controllerClass} не существует.");
             }
 
             $action = 'action'. ucfirst($ar[1]);
             if (!method_exists($controllerClass, $action)) {
-                throw new \Exeption("Ошибка, метод {$ar[1]} в контроллере {$controllerClass} не существует.");
+                throw new \Exception("Ошибка, метод {$ar[1]} в контроллере {$controllerClass} не существует.");
             }
 
             //preg_match("/([a-z]+)\([\'\`]?([\*a-z]+)[\'\`]?\)/i", $field, $matches, PREG_OFFSET_CAPTURE);
@@ -99,7 +105,7 @@ class Route
                     'method' => $up_method,
                     'uri' => $regEx,
                     'controller' => $controllerClass,
-                    'controller_method' => $action
+                    'controller_method' => $action,
                 ];
             }
         }
