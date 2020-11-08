@@ -7,11 +7,8 @@ use app\model\Products;
 class ProductController extends Controller
 {
     
-    protected $products_page_count = 5;
 
     public function actionIndex() {
-
-        $offset = (int)$_GET['offset'];
 
         $catalog = Products::get($this->products_page_count, $offset);
 
@@ -21,18 +18,21 @@ class ProductController extends Controller
         ]);
     }
 
-    public function actionCard() {
-        $id = (int)$_GET['id'];
-        $product = Products::find($id);
-        echo $this->render('card', [
-            'product' => $product
-        ]);
+    public function actionCard($params) {
+        $product = Products::find($params[0]);
+        if ($product->id){
+            echo $this->render('card', [
+                'product' => $product
+            ]);
+        } else {
+            return $this->errorAction();
+        }
     }
 
-    public function actionApiCatalog() {
-        $offset = (int)$_GET['offset'];
-        $count = Products::count();
-        $catalog = Products::get($this->products_page_count, $offset);
+    public function actionApiCatalog($params) {
+        $offset = $params['offset'];
+        $count = Products::count();        
+        $catalog = Products::get($params['count'], $offset);
         $items = [];
         foreach ($catalog as $product) {
             $items[] = $product->getDataFields();

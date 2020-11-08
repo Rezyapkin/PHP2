@@ -3,24 +3,21 @@
 
 namespace app\controllers;
 
+use app\interfaces\IController;
 
-abstract class Controller
+
+class Controller implements IController
 {
     protected $action;
     protected $defaultAction = 'index';
     protected $layout = 'main';
     protected $useLayout = true;
 
-    public function runAction($action = null) {
-        $this->action = $action ?: $this->defaultAction;
-        $method = "action" . ucfirst($this->action);
-        if (method_exists($this, $method)) {
-            $this->$method();
-        } else {
-            die('Экшен не существует');
-        }
+    public function errorAction() {
+        header('HTTP/1.0 404 Not Found');
+        header('Status: 404 Not Found');
+        return $this->render('404', []);
     }
-
 
     public function render($template, $params = []) {
         if ($this->useLayout) {

@@ -7,7 +7,6 @@
 .product-item {
     margin-bottom: 20px;
     margin-right: 20px;
-    width: 340px;
     clear: both;
 }
 
@@ -20,6 +19,10 @@
     display: flex;
     flex-wrap: wrap; 
 }
+
+.products .product-item {
+    width: 340px;
+}    
 
 .product_item__price {
     font-weight: bold;

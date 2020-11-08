@@ -36,7 +36,7 @@ class ItemDynamicList {
         if (!template) {
             template = this.renderTemplate();
         }    
-        el = this.getElement();
+        let el = this.getElement();
         if (el) {
             el.innerHTML = template;
         }
@@ -77,7 +77,6 @@ class DynamicList {
     }
 
     getURLApi(action='getItems') {
-        return '/?c=product&a=apiCatalog&offset=' + Object.keys(this.items).length;
         return this.urlApi + '/' + action;
     }
 

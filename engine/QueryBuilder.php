@@ -200,7 +200,7 @@ class QueryBuilder implements IQueryBuider
 
     public function find($id)
     {
-        $whereId = ['field' => $this->model->getKeyFieldName(), 'operator' => '', 'value' => $id];
+        $whereId = ['field' => $this->model->getKeyFieldName(), 'operator' => '=', 'value' => $id];
         $query = $this->getSQLAndParams([], [$whereId], 1, 0);
         return Db::getInstance()->queryObject($query['sql'], $query['params'], get_class($this->model));        
     }
