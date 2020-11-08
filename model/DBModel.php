@@ -2,49 +2,84 @@
 
 namespace app\model;
 
+use app\interfaces\IDbModel;
 use app\engine\Db;
+use app\engine\QueryBuilder;
 
-abstract class DBModel extends Model
+
+abstract class DBModel extends Model implements IDbModel
 {
+    
+    protected $keyFieldName = 'id';
 
-   
-    protected function getSQLAndParams($limit=0, $offset=0, $id = null) {
-        $result = [
-            "params" => [],
-            "sql" => "SELECT * FROM {$this->getTableName()}"
-        ];
+    protected $query = null;
 
-        if (!is_null($id)) {
-            $result["params"][$this->keyFieldName] = $id;
-            $result["sql"] .= " WHERE `{$this->keyFieldName}` = :{$this->keyFieldName}";
-        }    
 
-        if ($limit > 0) {
-            $result["sql"] .= " LIMIT " . (int)$offset . ", " . (int)$limit;
+    // Через это свойство реализуем связь один-к-одному с другими моделями
+    //  ['model' => ['fieldName', 'className', 'instance']] 
+    protected $realatedModels = [];
+
+    protected function clearInstanceInRM($fieldName) {
+        foreach ($realatedModels as $key => $value) {
+            if ($value['fieldName'] == $fieldName) {
+                unset($value['instance']); 
+                break;
+            }
+        }
+    }
+
+    public function __set($name, $value) {
+        //Если изменили значение поля, котрое связано с другой таблицей, очистим Instance
+        $this->clearInstanceInRM($name);
+
+        return parent::__set($name, $value);
+    }
+
+    public function newQuery() {
+        if (!isset($this->query)) {
+            $this->query = new QueryBuilder($this);
+        }
+        return $this->query;
+    }
+
+    public function getKeyFieldName() {
+        return $keyFieldName;
+    }
+
+    public function __get($name)
+    {  
+        //Код для работы со связанными таблицами, например в модели CartItem мы сможем обращатться к продукту как product.name
+        if (array_key_exists($name, $this->realatedModels) && $this->realatedModels[$name]['fieldName']) {
+            if (!isset($this->realatedModels[$name]['instance'])) {
+                $className = ($this->realatedModels[$name]['className']) ?: $name;
+                if (!strpos($className,'\\')) {
+                    $className = MODEL_NAMESPACE . $className;
+                }
+                if (class_exists($className)) {
+                    $this->realatedModels[$name]['instance'] = $className::find($this->realatedModels[$name]['fieldName']);
+                }
+            }
+
+            return $this->realatedModels[$name]['instance'];
         };
 
-        return $result;
+        return parent::__get($name);
+        
     }
 
-
-    protected function first()
+    public function __call($method, $parameters)
     {
-        $query = $this->getSQLAndParams(1, 0);
-        return Db::getInstance()->queryObject($query['sql'], $query['params'], static::class);
+        if (method_exists($this, $method)) {
+            return call_user_func_array([$this, $method], $parameters);
+        } else {
+            return call_user_func_array([$this->newQuery(), $method], $parameters);
+        }    
     }
 
-    protected function find($id)
+    public function __isset($name)
     {
-        $query = $this->getSQLAndParams(1, 0, $id);
-        return Db::getInstance()->queryObject($query['sql'], $query['params'], static::class);        
+        return (array_key_exists($name, $this->realatedModels)) ?: $this->isProperties($name);     
     }
-
-    protected function get($limit=0, $offset=0)
-    {
-        $query = $this->getSQLAndParams($limit, $offset);
-        return Db::getInstance()->queryAll($query['sql'],$query['params']);
-    }
-
 
     public function insert() {
 
@@ -107,5 +142,16 @@ abstract class DBModel extends Model
         return Db::getInstance()->execute($sql, ['id' => $this->id])->rowCount();
     }
 
-    abstract protected function getTableName();
+    public function isProperties($name) {
+        if ($name == $this->keyFieldName) {
+            return True;
+        }
+        return parent::isProperties($name);
+   }    
+
+    public function getFields() {
+        return array_merge([$this->keyFieldName], $this->props);
+    }   
+
+    abstract public function getTableName();
 }

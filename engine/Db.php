@@ -55,11 +55,16 @@ class Db
         return $this->connection->lastInsertId();
     }
 
-    //TODO сделать чтобы возвращал объект
-    public function queryObject($sql, $params, $class) {
+    public function queryObject($sql, $params, $className) {
         $proStatement = $this->query($sql, $params);
-        $proStatement->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $class);
+        $proStatement->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $className);
         return $proStatement->fetch();
+    }
+
+    public function queryObjects($sql, $params, $className) {
+        $proStatement = $this->query($sql, $params);
+        $proStatement->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $className);
+        return $proStatement->fetchall();
     }
 
     public function queryOne($sql, $params = []) {

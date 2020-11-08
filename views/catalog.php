@@ -11,9 +11,9 @@
 <p>Также реализовал пагинацию и ушел от статики через __callStatic</p>
 <div id="catalog" data-page_size="<?=$page_size?>">
 <? foreach ($catalog as $item): ?>
-    <h3><a href="/?c=product&a=card&id=<?=$item['id']?>"><?=$item['name']?></a></h3>
-    <p><?=$item['description']?></p>
-    <p>Цена: <?=$item['price']?></p>
+    <h3><a href="/?c=product&a=card&id=<?=($item->id)?>"><?=$item->name?></a></h3>
+    <p><?=$item->description?></p>
+    <p>Цена: <?=$item->price?></p>
     <hr>
 <? endforeach;?>
 </div>

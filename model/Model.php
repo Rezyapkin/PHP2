@@ -6,19 +6,18 @@ use app\engine\Db;
 
 abstract class Model
 {
-    protected $keyFieldName = 'id';
     protected $props = [];
-
-    protected function isProperties($name) {
-         return $name == $this->keyFieldName || array_key_exists($name, $this->props);
-    }
 
     protected function clearProps() {
         foreach ($this->props as $key=>$value) {
             $this->props[$key] = false;
         }
     }
-    
+
+    public function isProperties($name) {
+        return array_key_exists($name, $this->props);
+   }
+
     public static function __callStatic($method, $parameters)
     {
         $instance = new static;

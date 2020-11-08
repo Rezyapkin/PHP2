@@ -3,7 +3,7 @@
 namespace app\model;
 
 
-class Products extends QueryDBModel
+class Products extends DBModel
 {
     protected $id;
     protected $name;
@@ -28,7 +28,7 @@ class Products extends QueryDBModel
     }
 
 
-    protected function getTableName() {
+    public function getTableName() {
         return "products";
     }
 

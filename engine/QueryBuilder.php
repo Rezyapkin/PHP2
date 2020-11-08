@@ -2,9 +2,12 @@
 
 namespace app\engine;
 
+use app\interfaces\IQueryBuider;
+use app\interfaces\IDbModel;
 use app\engine\Db;
 
-class QueryBuilder extends DBModel
+
+class QueryBuilder implements IQueryBuider
 {
 
     protected const AGR_FUNCTIONS = ['AVG', 'COUNT', 'MAX', 'MIN', 'SUM'];
@@ -23,14 +26,26 @@ class QueryBuilder extends DBModel
     //Сортировка
     protected $order = [];
 
+    //Таблицы, в будущем возможно реализуем работу с несколькими таблицами
+    //Структура: ['tableName' => 'fields'] 
+
+    protected $model = null;
+
+    public function __construct(IDbModel $model) {
+        $this->model = $model;
+        if (!isset($this->model)) {
+            throw new \Exception("Объект класса должен быть связан с объектом IDbModel"); 
+        }
+    }
 
     public function __call($method, $parameters)
     {
         $up_method = strtoupper($method);
 
-        if (array_search($up_method, $this->AGR_FUNCTIONS) !== false) {
+        if (array_search($up_method, static::AGR_FUNCTIONS) !== false) {
             return $this->agrFunc($up_method, $parameters);
         }
+
         $connector = 'AND';
 
         switch ($method) {
@@ -41,7 +56,11 @@ class QueryBuilder extends DBModel
             case 'orderBy':
                 return $this->orderFunc($parameters);
             default:
-                return call_user_func_array([$this, $method], $parameters);    
+                if (method_exists($this, $method)) {
+                    return call_user_func_array([$this, $method], $parameters);    
+                } else {
+                    throw new \Exception("Метод {$method} не существует!");    
+                };    
         }
     }
 
@@ -55,11 +74,11 @@ class QueryBuilder extends DBModel
         $operator = ($count_par == 2) ? '=' : $parameters[1];
         $value = $parameters[$count_par - 1];
         
-        if (!$this->isProperties($field)) {
+        if (!$this->model->isProperties($field)) {
             throw new \Exception("Не существует поле {$field} для условной выборки!"); 
         }
 
-        if (array_search($operator, $this->OPERATORS) === false) {
+        if (array_search($operator, static::OPERATORS) === false) {
             throw new \Exception("Не верный оператор '{$operator}' передан в качестве параметра №2!"); 
         }
 
@@ -70,27 +89,22 @@ class QueryBuilder extends DBModel
             'connector' => $connector
         ];
 
-        $result = clone $this;
-        array_pop($this->where);
-
-        return $result;
+        return $this;
     
     }
 
     protected function orderFunc($parameters) {
         foreach ($parameters as $field) {
             $field_words = explode(" ",$field);
-            if (!$this->isProperties($field_words[0])) {
+            if (!$this->model->isProperties($field_words[0])) {
                 throw new \Exception("Не существует поля {$field_words[0]} для условной выборки!"); 
             }
         }
 
         $old_order = $this->order;
         $this->order = array_merge($this->order, $this->getFieldsForQuery($parameters)); 
-        $result = clone $this;
-        $this->order = $old_order;
 
-        return $result;
+        return $this;
 
     }
 
@@ -111,7 +125,7 @@ class QueryBuilder extends DBModel
         }, $agr_params);
 
 
-        $query = $this->getQuery($fields,[]);
+        $query = $this->getSQLAndParams($fields,[]);
         $result = Db::getInstance()->queryOne($query['sql'],$query['params']);
         return (count($result) == 1) ? $result[array_keys($result)[0]] : $result;
     }
@@ -123,8 +137,8 @@ class QueryBuilder extends DBModel
 
         foreach ($fields as $field) {
 
-            $field_words = explode(" ",$field);
-            if ($this->isProperties($field_words[0])) {
+            $field_words = explode(" ", $field);
+            if ($this->model->isProperties($field_words[0])) {
                 $desc = (count($field_words) > 1 && $field_words[1]='DESC') ? " DESC" : "";
                 $result[] = "`{$field_words[0]}`{$desc}";
                 continue;
@@ -132,8 +146,8 @@ class QueryBuilder extends DBModel
 
             //Решил, что в полях fields разрешено использовать агрегирующие функции, поэтому проверим на них
             preg_match("/([a-z]+)\([\'\`]?([\*a-z]+)[\'\`]?\)/i", $field, $matches, PREG_OFFSET_CAPTURE);
-            if (count($matches) == 3 && array_search($matches[1][0],$this->AGR_FUNCTIONS) !== false) {
-                if ($this->isProperties($matches[2][0])) {
+            if (count($matches) == 3 && array_search($matches[1][0], static::AGR_FUNCTIONS) !== false) {
+                if ($this->model->isProperties($matches[2][0])) {
                     $result[] = "{$matches[1][0]}(`{$matches[2][0]}`) AS `{$matches[2][0]}`";    
                 } elseif ($matches[2][0]=="*")  {
                     $result[] = "{$matches[1][0]}(*) AS {$matches[1][0]}";
@@ -145,7 +159,7 @@ class QueryBuilder extends DBModel
     }
 
     //Формируем динамический запрос, возвращается массив из двух элементов ['sql' - текст запроса, 'params' - параметры]
-    protected function getQuery($fields = [], $where = [], $limit = 0, $offset = 0) {
+    public function getSQLAndParams($fields = [], $where = [], $limit = 0, $offset = 0) {
         $fields = $this->getFieldsForQuery($fields);
         $order = $this->getFieldsForQuery($this->order);
 
@@ -155,7 +169,7 @@ class QueryBuilder extends DBModel
         $index = 0;
         $where_str = "";
         foreach ($where as $where_one) {
-            if (array_search($where_one['operator'],$this->OPERATORS) === false || !$this->isProperties($where_one['field'])) {
+            if (array_search($where_one['operator'], static::OPERATORS) === false || !$this->model->isProperties($where_one['field'])) {
                 continue;
             }
             $param_name = "W_{$index}";
@@ -173,18 +187,28 @@ class QueryBuilder extends DBModel
 
         return 
         [
-            "sql" => "SELECT {$fields_query} FROM {$this->getTableName()} {$where_str}{$order_by}{$limit}",
+            "sql" => "SELECT {$fields_query} FROM {$this->model->getTableName()} {$where_str}{$order_by}{$limit}",
             "params" => $query_params
         ];
     }
 
-    protected function getSQLAndParams($limit=0, $offset=0, $id = null) {
-        $where = [];
-        if (!is_null($id)) {
-            $where[] = ['field' => $this->keyFieldName, 'value' => $id, 'operator' => '='];
-        } 
-        return $this->getQuery([], $where, $limit, $offset);   
-    }    
+    public function first()
+    {
+        $query = $this->getSQLAndParams([], [], 1, 0);
+        return Db::getInstance()->queryObject($query['sql'], $query['params'], get_class($this->model));
+    }
 
-    abstract protected function getTableName();
+    public function find($id)
+    {
+        $whereId = ['field' => $this->model->getKeyFieldName(), 'operator' => '', 'value' => $id];
+        $query = $this->getSQLAndParams([], [$whereId], 1, 0);
+        return Db::getInstance()->queryObject($query['sql'], $query['params'], get_class($this->model));        
+    }
+
+    public function get($limit=0, $offset=0)
+    {
+        $query = $this->getSQLAndParams([], [], $limit, $offset);
+        return Db::getInstance()->queryObjects($query['sql'],$query['params'], get_class($this->model));
+    }
+
 }
