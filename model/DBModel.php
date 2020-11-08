@@ -150,8 +150,16 @@ abstract class DBModel extends Model implements IDbModel
    }    
 
     public function getFields() {
-        return array_merge([$this->keyFieldName], $this->props);
+        return array_merge([$this->keyFieldName], array_keys($this->props));
     }   
+
+    public function getDataFields() {
+        $result = [];
+        foreach ($this->getFields() as $field) {
+            $result[$field] = $this->$field;
+        }
+        return $result;
+    }
 
     abstract public function getTableName();
 }

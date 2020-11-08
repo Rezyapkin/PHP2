@@ -8,4 +8,5 @@ interface IDbModel
     public function getFields();
     public function getKeyFieldName();
     public function isProperties($name);
+    public function getDataFields();
 }

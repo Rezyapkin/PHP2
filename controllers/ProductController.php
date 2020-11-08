@@ -31,8 +31,23 @@ class ProductController extends Controller
 
     public function actionApiCatalog() {
         $offset = (int)$_GET['offset'];
+        $count = Products::count();
         $catalog = Products::get($this->products_page_count, $offset);
-        echo json_encode($catalog, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $items = [];
+        foreach ($catalog as $product) {
+            $items[] = $product->getDataFields();
+            if (!end($items)['id']) {
+                $id = $product->getKeyFieldName();
+                end($items)['id'] = $product->$id;
+            }    
+        }
+
+        $answer = [
+            'items' => $items,
+            'totalCount' => $count
+        ];
+
+        echo json_encode($answer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
 }
