@@ -4,7 +4,9 @@ namespace app\engine;
 
 use app\traits\Tsingletone;
 
-class Db
+use app\interfaces\IDb;
+
+class Db implements IDb
 {
     private $config = [
         'driver' => 'mysql',

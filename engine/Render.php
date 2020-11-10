@@ -5,7 +5,6 @@ namespace app\engine;
 
 use app\interfaces\IRenderer;
 
-
 class Render implements IRenderer
 {
     protected const TEMPLATE_DIR = ROOT_DIR . "/views";

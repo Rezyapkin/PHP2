@@ -43,7 +43,7 @@ abstract class DBModel extends Model implements IDbModel
     }
 
     public function getKeyFieldName() {
-        return $this->keyFieldName;
+        return $keyFieldName;
     }
 
     public function __get($name)

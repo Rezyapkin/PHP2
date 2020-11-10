@@ -19,7 +19,7 @@ class ProductController extends Controller
     }
 
     public function actionCard($params) {
-        $product = Products::find($params[0]);
+        $product = Products::find($params['id']);
         if ($product->id){
             echo $this->render('card', [
                 'product' => $product
