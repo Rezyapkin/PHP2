@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\engine;
 
 use app\interfaces\IRenderer;

@@ -6,48 +6,20 @@ use app\model\Products;
 
 class ProductController extends Controller
 {
-    
+
+    const PAGE_SIZE = 10;
 
     public function actionIndex() {
-
-        $catalog = Products::get($this->products_page_count, $offset);
-
-        echo $this->render('catalog', [
-            'catalog' => $catalog,
-            'page_size' => $this->products_page_count,
-        ]);
+        echo $this->render('catalog', ['page-size' => static::PAGE_SIZE]);
     }
 
     public function actionCard($params) {
-        $product = Products::find($params['id']);
-        if ($product->id){
-            echo $this->render('card', [
-                'product' => $product
-            ]);
-        } else {
-            return $this->errorAction();
-        }
+        echo $this->actionByIdCard('app\model\Products', 'card', $params);
     }
 
-    public function actionApiCatalog($params) {
-        $offset = $params['offset'];
-        $count = Products::count();        
-        $catalog = Products::get($params['count'], $offset);
-        $items = [];
-        foreach ($catalog as $product) {
-            $items[] = $product->getDataFields();
-            if (!end($items)['id']) {
-                $id = $product->getKeyFieldName();
-                end($items)['id'] = $product->$id;
-            }    
-        }
-
-        $answer = [
-            'items' => $items,
-            'totalCount' => $count
-        ];
-
-        echo json_encode($answer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    public function actionApiDynamicList($params) {
+        $query = Products::orderBy('price');
+        echo $this->getJSONDynamicList($query, $params);
     }
 
 }

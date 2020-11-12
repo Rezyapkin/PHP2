@@ -5,9 +5,9 @@ namespace app\controllers;
 class SimplePageController extends Controller
 {
 
-    public function actionIndex() {
+    public function actionIndex($params) {
 
-        echo $this->render('index', ['twig' => ', это Twig']);
+        echo $this->render('index', ['authForm' => $this->renderTemplate('auth', $params)]);
     }
 
 

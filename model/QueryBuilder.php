@@ -1,6 +1,6 @@
 <?php
 
-namespace app\engine;
+namespace app\model;
 
 use app\interfaces\IQueryBuider;
 use app\interfaces\IDbModel;

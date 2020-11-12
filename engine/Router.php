@@ -23,7 +23,7 @@ class Router
         }   
         $up_method = strtoupper($method);
         if (array_search($up_method, static::METHODS) !== false) {
-            return $this->mutch([$up_method], $parameters[0], $parameters[1]);
+            return $this->match([$up_method], $parameters[0], $parameters[1]);
         }
     }
     
@@ -33,6 +33,7 @@ class Router
     }
 
     protected function getParamsForControllerAction($route) {
+        $params = [];
         preg_match($route['regEx'], $this->request->requestString, $matches, PREG_OFFSET_CAPTURE);
         for ($i = 1; $i < count($matches); $i++) {
             $params[$route['paramsName'][$i - 1]] = $matches[$i][0];
@@ -47,11 +48,17 @@ class Router
         ];        
     }
 
+    protected function checkLogout($params) {
+        if (key_exists('logout', $params)) {
+            \Auth::logout();
+        }
+    }
+
     protected function action() {
         $default = $this->getDefaultControllerAndAction();
         $controllerName = $default['name'];
         $method = $default['method'];
-        $params = [];
+        $params = $this->request->params;
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== $this->request->method)  {
@@ -61,13 +68,14 @@ class Router
             if ($this->checkUriWithRegEx($route['regEx'])) {
                 $controllerName = $route['controllerName'];
                 $method = $route['controllerMethod'];
-                $params = $this->getParamsForControllerAction($route);
+                $params = array_merge($params, $this->getParamsForControllerAction($route));
                 break;
             }
         }
 
+        $this->checkLogout($params);
         $controller = new $controllerName($this->renderer);
-        echo $controller->$method($params);
+        $controller->$method($params);
 
     }
 
@@ -82,7 +90,7 @@ class Router
         return compact("regEx", "paramsName");
     } 
 
-    protected function mutch($methods, $uri, $controllerAndMethod, $renderer = '') {
+    protected function match($methods, $uri, $controllerAndMethod, $renderer = '') {
         foreach ($methods as $method) {
             $ar = explode('.', $controllerAndMethod);
             if (count($ar) != 2) {

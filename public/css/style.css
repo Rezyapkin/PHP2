@@ -232,3 +232,9 @@ td, th {
     padding: 5px;
     margin: 0px;
 }
+
+.news-item {
+    padding: 0 10px;
+    font-size: 16px;
+
+}

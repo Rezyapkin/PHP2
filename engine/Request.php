@@ -11,6 +11,11 @@ class Request {
     function __construct() {
         $this->requestString = explode('?',$_SERVER['REQUEST_URI'])[0];
         $this->method = $_SERVER['REQUEST_METHOD']; 
+        $this->fillParams();
+
+    }
+
+    function fillParams() {
         $this->params = $_REQUEST;
 
         $data = json_decode(file_get_contents('php://input'));
@@ -19,6 +24,9 @@ class Request {
                 $this->params[$key] = $value;
             }
         }
+
+        $this->params['back_url'] = $_SERVER['HTTP_REFERER'];
+
     }
 
     function __get($name) {

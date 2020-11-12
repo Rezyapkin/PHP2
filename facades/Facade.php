@@ -16,6 +16,8 @@ abstract class Facade {
         $instance = static::$app->make(static::getFacadeAccesor());
         if ($instance && is_callable(array($instance, $method))) {
             return call_user_func_array([$instance, $method], $parameters);
+        } else {
+            throw new \Exception("Ошибка, метод {$method} не найден.");
         }
          
     }

@@ -12,7 +12,7 @@ class ProductItems extends ItemDynamicList {
 }
 
 class Products extends DynamicList {
-    constructor(idList, pageSize = 10, urlApi = '/api/products', itemClassName='product-item') {
+    constructor(idList, pageSize=10, urlApi='/api/products', itemClassName='product-item') {
         super(idList, pageSize, urlApi, itemClassName);
     }
 

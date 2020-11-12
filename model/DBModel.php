@@ -4,7 +4,6 @@ namespace app\model;
 
 use app\interfaces\IDbModel;
 use app\engine\Db;
-use app\engine\QueryBuilder;
 
 
 abstract class DBModel extends Model implements IDbModel
@@ -20,7 +19,7 @@ abstract class DBModel extends Model implements IDbModel
     protected $realatedModels = [];
 
     protected function clearInstanceInRM($fieldName) {
-        foreach ($realatedModels as $key => $value) {
+        foreach ($this->realatedModels as $key => $value) {
             if ($value['fieldName'] == $fieldName) {
                 unset($value['instance']); 
                 break;
@@ -43,7 +42,7 @@ abstract class DBModel extends Model implements IDbModel
     }
 
     public function getKeyFieldName() {
-        return $keyFieldName;
+        return $this->keyFieldName;
     }
 
     public function __get($name)
@@ -81,9 +80,10 @@ abstract class DBModel extends Model implements IDbModel
         return (array_key_exists($name, $this->realatedModels)) ?: $this->isProperties($name);     
     }
 
-    public function insert() {
+    protected function insert() {
 
         $params = [];
+
 
         foreach ($this->props as $key=>$value) {
             $params["{$key}"] = $this->$key;
@@ -101,7 +101,7 @@ abstract class DBModel extends Model implements IDbModel
         return $this;
     }
 
-    public function update() {
+    protected function update() {
         $id_name = $this->keyFieldName;
         $sets = [];
         $params = [];

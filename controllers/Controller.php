@@ -13,6 +13,7 @@ class Controller implements IController
     protected $defaultAction = 'index';
     protected $layout = 'main';
     protected $useLayout = true;
+    protected $globalParams = [];
 
     protected $renderer;
 
@@ -23,16 +24,30 @@ class Controller implements IController
     public function __construct(IRenderer $renderer)
     {
          $this->renderer = $renderer;
+
+    }
+
+    public function setGlobalParams() {
+        $this->globalParams = [
+            "isAuth" => \Auth::isAuth(),
+            "isAdmin" => \Auth::isAdmin(),           
+        ];
+
+        if ($this->globalParams['isAuth']) {
+            $this->globalParams = array_merge($this->globalParams, \Auth::getUserInfo());
+        }
     }
 
 
     public function errorAction() {
         header('HTTP/1.0 404 Not Found');
         header('Status: 404 Not Found');
-        return $this->render('404', []);
+        echo $this->render('404', []);
     }
 
     public function render($template, $params = []) {
+        $this->setGlobalParams();
+        $params = array_merge($params, $this->globalParams);
         if ($this->useLayout) {
             return $this->renderTemplate("layouts/{$this->layout}", [
                 'menu' => $this->renderTemplate('menu', $params),
@@ -41,6 +56,41 @@ class Controller implements IController
         } else {
             return $this->renderTemplate($template, $params);
         }
+    }
+
+    public function actionByIdCard($ClassName, $tmplName, $params) {
+        $item = $ClassName::find($params['id']);
+
+        if ($item) {
+            $id = $item->getKeyFieldName();
+            if ($item->$id) {
+                return $this->render($tmplName, [
+                    'item' => $item
+                    ]);
+            }
+        }
+
+        return $this->errorAction();
+    }
+
+    public function getJSONDynamicList($queryDB, $params) {
+        $count = $queryDB->count();   
+        $list = $queryDB->get($params['count'], $params['offset']);
+        $items = [];
+        foreach ($list as $item) {
+            $items[] = $item->getDataFields();
+            if (!end($items)['id']) {
+                $id = $item->getKeyFieldName();
+                end($items)['id'] = $item->$id;
+            }    
+        }
+
+        $answer = [
+            'items' => $items,
+            'totalCount' => $count
+        ];
+
+        return json_encode($answer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
 
