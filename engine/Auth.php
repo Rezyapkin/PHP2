@@ -52,7 +52,7 @@ class Auth
 
     public function checkCookieHash() {
         if (!isset($this->session->login) && isset($_COOKIE['hash'])) {
-            $user = \Users::where('hash', $_COOKIE['hash'])->first();
+            $user = \Users::where('cookie_hash', $_COOKIE['hash'])->first();
             if ($user && !empty($user->login)) {
                 $this->user = $user;
                 $this->updateDataAuthInSession();
@@ -74,8 +74,8 @@ class Auth
     
     public function updateHashUser($hash = '') {
         if ($this->user) {
-            $this->user->password_hash = $hash;
-            $this->user->save();
+            $this->user->cookie_hash = $hash;
+            \Users::save($this->user);
             setcookie("hash", $hash, time() + (isset($hash) ? 3600 : -3600), '/');
         }
     }
@@ -91,7 +91,6 @@ class Auth
 
     public function auth($login, $pass, $save = false) {
         $this->user = $this->getUserByLoginPassword($login, $pass);
-        
         if ($this->user) {
             $this->updateDataAuthInSession();
             $hash = ($save) ? uniqid(rand(), true) : "";  

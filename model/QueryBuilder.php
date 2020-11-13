@@ -185,7 +185,7 @@ class QueryBuilder implements IQueryBuider
 
         return 
         [
-            "sql" => "SELECT {$fields_query} FROM {$this->model->getTableName()} {$where_str}{$order_by}{$limit}",
+            "sql" => "SELECT {$fields_query} FROM {$this->repo->getTableName()} {$where_str}{$order_by}{$limit}",
             "params" => $query_params
         ];
     }

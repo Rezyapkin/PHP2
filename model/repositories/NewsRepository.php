@@ -3,14 +3,14 @@
 namespace app\model\repositories;
 
 use app\model\Repository;
-use app\model\entities\New;
 
+use app\model\entities\News;
 
 class NewsRepository extends Repository
 {
     public function getEntityClass()
     {
-        return New::class;
+        return News::class;
     }
 
     public function getTableName()

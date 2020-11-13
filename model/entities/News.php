@@ -4,7 +4,7 @@ namespace app\model\entities;
 
 use app\model\Model;
 
-class New extends Model
+class News extends Model
 {
     protected $id;
     protected $title;

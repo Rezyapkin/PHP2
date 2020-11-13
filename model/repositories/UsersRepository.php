@@ -3,24 +3,25 @@
 namespace app\model\repositories;
 
 use app\model\Repository;
+use app\model\Model;
 use app\model\entities\User;
 
 
 class UsersRepository extends Repository
 {
-    protected function update() {
-        if ($this->props['login'] === True && $this->isLoginExist($this->login)) {
+    protected function update(Model $entity) {
+        if ($entity->props['login'] === True && $this->isLoginExist($entity->login)) {
             throw new \Exception("Пользователь с таким логином существует."); 
         } else {
-            parent::update();
+            parent::update($entity);
         }
     }
 
-    protected function insert() {
-        if ($this->isLoginExist($this->login)) {
+    protected function insert(Model $entity) {
+        if ($this->isLoginExist($entity->login)) {
             throw new \Exception("Пользователь с таким логином существует."); 
         } else {
-            parent::insert();
+            parent::insert($entity);
         }
     }
 

@@ -2,14 +2,14 @@
 
 namespace app\controllers;
 
-use app\model\Users;
+use app\model\entities\User;
 
 class AuthController extends Controller
 {
 
     public function actionLogin($params) {
-        if (isset($params['login']) && isset($params['current-password'])) {
-            \Auth::auth($params['login'], $params['current-password'], $params['save']);    
+        if (isset($params['login']) && isset($params['password'])) {
+            \Auth::auth($params['login'], $params['password'], $params['save']);    
             if (!\Auth::isAuth()) {
                 $params['message'] = 'Не верная пара логин/пароль!'; 
             } else {
@@ -23,14 +23,14 @@ class AuthController extends Controller
     public function actionRegister($params) {
         $message = "";
         $header = "";
-        
-        if (empty($params['login']) || empty($params['name']) || empty($params['current-password'])) {
+
+        if (empty($params['login']) || empty($params['name']) || empty($params['password'])) {
             $message = "Не заполнены все поля необходимые для регистрации пользователя!";
         } elseif (\Auth::isLoginExist($params['login'])) {
             $message = "Пользователь с таким логином уже зарегистирован!";
         } else {
-            $user = new Users($params['login'], $params['current-password'], $params['name']);
-            $user->save();
+            $user = new User($params['login'], $params['password'], $params['name']);
+            \Users::save($user);
             if ($user->id) {
                 $header = "Пользователь {$params['login']} успешно зарегистирован. Вы можете авторизоваться на сайте.";
             } else {

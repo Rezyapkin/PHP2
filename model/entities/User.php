@@ -1,21 +1,23 @@
 <?php
 
-namespace app\model;
+namespace app\model\entities;
 
 use app\model\Model;
 
-class Users extends DBModel
+class User extends Model
 {
-    public $id;
-    public $login;
-    public $name;
-    public $password_hash;
-    public $is_admin;
+    protected $id;
+    protected $login;
+    protected $name;
+    protected $password_hash;
+    protected $cookie_hash;
+    protected $is_admin;
 
     protected $props = [
         'login' => false,
         'name' => false,
         'password_hash' => false,
+        'cookie_hash' => false,
         'is_admin' => false
     ];
 

@@ -50,7 +50,7 @@ abstract class Repository implements IRepository
         $params = [];
 
         foreach ($entity->props as $key=>$value) {
-            $params["{$key}"] = $this->$key;
+            $params["{$key}"] = $entity->$key;
         }
 
         $columns = "`" . implode("`, `", array_keys($params)) . "`";

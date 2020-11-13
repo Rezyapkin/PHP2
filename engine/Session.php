@@ -25,9 +25,7 @@ class Session
     }
 
     public function __set($name, $value) { 
-        if (key_exists($name, $_SESSION)) {
-            $_SESSION[$name] = $value;
-        }
+        $_SESSION[$name] = $value;
     }
 
     public function deleteParam($param) {

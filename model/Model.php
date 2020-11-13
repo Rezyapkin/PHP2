@@ -38,7 +38,7 @@ abstract class Model
             return $this->realatedModels[$name]['instance'];
         };
 
-        if ($this->isProperties($name)) {
+        if ($this->isProperties($name) || $name='props') {
             return $this->$name;
         }              
     }
