@@ -3,9 +3,7 @@
 namespace app\model;
 
 use app\interfaces\IQueryBuider;
-use app\interfaces\IDbModel;
-use app\engine\Db;
-
+use app\interfaces\IRepository;
 
 class QueryBuilder implements IQueryBuider
 {
@@ -34,7 +32,8 @@ class QueryBuilder implements IQueryBuider
 
     public function __construct(IRepository $repo) {
         $this->repo = $repo;
-        $this->model = $repo->getEntityClass();
+        $className = '\\' . $repo->getEntityClass();
+        $this->model = new $className;
     }
 
     public function __call($method, $parameters)
@@ -125,7 +124,7 @@ class QueryBuilder implements IQueryBuider
 
 
         $query = $this->getSQLAndParams($fields,[]);
-        $result = $repo->getDb()->queryOne($query['sql'],$query['params']);
+        $result = $this->repo->getDb()->queryOne($query['sql'],$query['params']);
         return (count($result) == 1) ? $result[array_keys($result)[0]] : $result;
     }
 
@@ -194,20 +193,20 @@ class QueryBuilder implements IQueryBuider
     public function first()
     {
         $query = $this->getSQLAndParams([], [], 1, 0);
-        return $repo->getDb()->queryObject($query['sql'], $query['params'], $repo->getEntityClass());
+        return $this->repo->getDb()->queryObject($query['sql'], $query['params'], $this->repo->getEntityClass());
     }
 
     public function find($id)
     {
         $whereId = ['field' => $this->model->getKeyFieldName(), 'operator' => '=', 'value' => $id];
         $query = $this->getSQLAndParams([], [$whereId], 1, 0);
-        return $repo->getDb()->queryObject($query['sql'], $query['params'], $repo->getEntityClass());        
+        return $this->repo->getDb()->queryObject($query['sql'], $query['params'], $this->repo->getEntityClass());        
     }
 
     public function get($limit=0, $offset=0)
     {
         $query = $this->getSQLAndParams([], [], $limit, $offset);
-        return $repo->getDb()->queryObjects($query['sql'],$query['params'], $repo->getEntityClass());
+        return $this->repo->getDb()->queryObjects($query['sql'],$query['params'], $this->repo->getEntityClass());
     }
 
 }

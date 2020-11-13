@@ -45,7 +45,8 @@ abstract class Model
 
     public function setKeyValue($value) {
         if (empty($this->getKeyValue())) {
-            $this->[$this->getKeyFieldName()] = $value;
+            $id = $this->getKeyFieldName();
+            $this->$id = $value;
         }
     }
 
@@ -86,7 +87,8 @@ abstract class Model
     }
 
     public function getKeyValue() {
-        return $this->[$this->getKeyFieldName()];
+        $id = $this->getKeyFieldName();
+        return $this->$id;
     }    
 
     public function isProperties($name) {

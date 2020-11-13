@@ -6,14 +6,14 @@ use app\interfaces\IRepository;
 use app\engine\Db;
 
 
-abstract class DBModel implements IRepository
+abstract class Repository implements IRepository
 {
 
     protected $query = null;
 
     protected $db = null;
 
-    public function __construct(iDb $db)
+    public function __construct(Db $db)
     {
         $this->db = $db;
     }
@@ -59,7 +59,7 @@ abstract class DBModel implements IRepository
         $sql = "INSERT INTO {$this->getTableName()} ({$columns}) VALUES ({$values})";
 
         if ($this->db->execute($sql, $params)) {
-            $entity->setKeyValue($this->db->lastInsertId();
+            $entity->setKeyValue($this->db->lastInsertId());
         }
 
         return $this;

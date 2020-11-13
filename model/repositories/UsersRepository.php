@@ -6,10 +6,10 @@ use app\model\Repository;
 use app\model\entities\User;
 
 
-class NewsRepository extends Repository
+class UsersRepository extends Repository
 {
     protected function update() {
-        if ($this->props['login'] === True && isLoginExist($this->login)) {
+        if ($this->props['login'] === True && $this->isLoginExist($this->login)) {
             throw new \Exception("Пользователь с таким логином существует."); 
         } else {
             parent::update();
@@ -28,7 +28,7 @@ class NewsRepository extends Repository
         $result = $this->newQuery()->where('login', strtolower($login))->first();
         return ($result && $result->login == $login);    
     }
-    
+
     public function getEntityClass()
     {
         return User::class;

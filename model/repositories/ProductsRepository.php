@@ -5,7 +5,7 @@ namespace app\model\repositories;
 use app\model\Repository;
 use app\model\entities\Product;
 
-class NewsRepository extends Repository
+class ProductsRepository extends Repository
 {
     public function getEntityClass()
     {

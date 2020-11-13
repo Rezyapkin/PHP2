@@ -2,6 +2,7 @@
 
 namespace app\model\entities;
 
+use app\model\Model;
 
 class New extends Model
 {

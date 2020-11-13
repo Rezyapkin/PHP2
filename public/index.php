@@ -14,6 +14,8 @@ Facade::setFacadeApplication($app);
 include ROOT_DIR . "/config/binding.php";
 include ROOT_DIR . "/routes/map.php";
 
+//new app\model\entities\Product;
+
 App::start(); 
 
 

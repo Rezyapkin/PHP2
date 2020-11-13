@@ -2,6 +2,8 @@
 
 namespace app\model\entities;
 
+use app\model\Model;
+
 class Product extends Model
 {
     protected $id;

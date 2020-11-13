@@ -6,8 +6,5 @@ interface IRepository
 {
     public function getTableName();
     public function getDb();
-    public function getFields();
-    public function getKeyFieldName();
-    public function isProperties($name);
-    public function getDataFields();
+    public function newQuery();
 }
