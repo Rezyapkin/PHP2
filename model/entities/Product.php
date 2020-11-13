@@ -1,9 +1,8 @@
 <?php
 
-namespace app\model;
+namespace app\model\entities;
 
-
-class Products extends DBModel
+class Product extends Model
 {
     protected $id;
     protected $name;

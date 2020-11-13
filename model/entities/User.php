@@ -29,37 +29,13 @@ class Users extends DBModel
         return $this->password_hash = ($pass) ? password_hash($pass, PASSWORD_DEFAULT) : $pass; 
     }
 
-    public function getTableName() {
-        return "users";
-    }
 
     public function __set($name, $value) {
         if ($name == 'login') {
             $value = strtolower($value);
         }
-
         parent::__set($name, $value);
     }
 
-    protected function update() {
-        if ($this->props['login'] === True && isLoginExist($this->login)) {
-            throw new \Exception("Пользователь с таким логином существует."); 
-        } else {
-            parent::update();
-        }
-    }
-
-    protected function insert() {
-        if ($this->isLoginExist($this->login)) {
-            throw new \Exception("Пользователь с таким логином существует."); 
-        } else {
-            parent::insert();
-        }
-    }
-
-    protected function isLoginExist($login) {
-        $result = $this->newQuery()->where('login', strtolower($login))->first();
-        return ($result && $result->login == $login);    
-    }
     
 }

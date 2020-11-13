@@ -2,9 +2,10 @@
 
 namespace app\interfaces;
 
-interface IDbModel
+interface IRepository
 {
     public function getTableName();
+    public function getDb();
     public function getFields();
     public function getKeyFieldName();
     public function isProperties($name);

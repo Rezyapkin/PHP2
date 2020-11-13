@@ -3,7 +3,7 @@
     <br>
     <a href="?logout" class="black-button">Выйти</a>
 {% else %}
-    {{ authForm|raw }}
+    {% include 'auth.twig' %}
 {% endif %} 
 
 <h2>Что нового сделано</h2>

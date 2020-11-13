@@ -1,9 +1,9 @@
 <?php
 
-namespace app\model;
+namespace app\model\entities;
 
 
-class News extends DBModel
+class New extends Model
 {
     protected $id;
     protected $title;

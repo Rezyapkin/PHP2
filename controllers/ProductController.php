@@ -14,11 +14,11 @@ class ProductController extends Controller
     }
 
     public function actionCard($params) {
-        echo $this->actionByIdCard('app\model\Products', 'card', $params);
+        echo $this->actionByIdCard('\Products', 'card', $params);
     }
 
     public function actionApiDynamicList($params) {
-        $query = Products::orderBy('price');
+        $query = \Products::orderBy('price');
         echo $this->getJSONDynamicList($query, $params);
     }
 

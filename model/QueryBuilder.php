@@ -29,13 +29,12 @@ class QueryBuilder implements IQueryBuider
     //Таблицы, в будущем возможно реализуем работу с несколькими таблицами
     //Структура: ['tableName' => 'fields'] 
 
-    protected $model = null;
+    protected $repo;
+    protected $model;
 
-    public function __construct(IDbModel $model) {
-        $this->model = $model;
-        if (!isset($this->model)) {
-            throw new \Exception("Объект класса должен быть связан с объектом IDbModel"); 
-        }
+    public function __construct(IRepository $repo) {
+        $this->repo = $repo;
+        $this->model = $repo->getEntityClass();
     }
 
     public function __call($method, $parameters)
@@ -126,7 +125,7 @@ class QueryBuilder implements IQueryBuider
 
 
         $query = $this->getSQLAndParams($fields,[]);
-        $result = Db::getInstance()->queryOne($query['sql'],$query['params']);
+        $result = $repo->getDb()->queryOne($query['sql'],$query['params']);
         return (count($result) == 1) ? $result[array_keys($result)[0]] : $result;
     }
 
@@ -195,20 +194,20 @@ class QueryBuilder implements IQueryBuider
     public function first()
     {
         $query = $this->getSQLAndParams([], [], 1, 0);
-        return Db::getInstance()->queryObject($query['sql'], $query['params'], get_class($this->model));
+        return $repo->getDb()->queryObject($query['sql'], $query['params'], $repo->getEntityClass());
     }
 
     public function find($id)
     {
         $whereId = ['field' => $this->model->getKeyFieldName(), 'operator' => '=', 'value' => $id];
         $query = $this->getSQLAndParams([], [$whereId], 1, 0);
-        return Db::getInstance()->queryObject($query['sql'], $query['params'], get_class($this->model));        
+        return $repo->getDb()->queryObject($query['sql'], $query['params'], $repo->getEntityClass());        
     }
 
     public function get($limit=0, $offset=0)
     {
         $query = $this->getSQLAndParams([], [], $limit, $offset);
-        return Db::getInstance()->queryObjects($query['sql'],$query['params'], get_class($this->model));
+        return $repo->getDb()->queryObjects($query['sql'],$query['params'], $repo->getEntityClass());
     }
 
 }

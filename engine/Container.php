@@ -41,9 +41,7 @@ class Container
         return $result;
     }
 
-    
-
-    public function build($concrete) {
+        public function build($concrete) {
 
         if ($concrete == get_class($this)) {
             return $this;

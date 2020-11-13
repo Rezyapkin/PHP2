@@ -13,11 +13,11 @@ class NewsController extends Controller
     }
 
     public function actionCard($params) {
-        echo $this->actionByIdCard('app\model\news', 'newsOne', $params);
+        echo $this->actionByIdCard('\News', 'newsOne', $params);
     }
 
     public function actionApiDynamicList($params) {
-        $query = News::orderBy('id DESC');
+        $query = \News::orderBy('id DESC');
         echo $this->getJSONDynamicList($query, $params);
     }
 

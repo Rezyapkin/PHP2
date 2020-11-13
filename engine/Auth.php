@@ -2,8 +2,6 @@
 
 namespace app\engine;
 
-use app\model\Users;
-
 class Auth
 {
     protected $user = null;
@@ -54,7 +52,7 @@ class Auth
 
     public function checkCookieHash() {
         if (!isset($this->session->login) && isset($_COOKIE['hash'])) {
-            $user = Users::where('hash', $_COOKIE['hash'])->first();
+            $user = \Users::where('hash', $_COOKIE['hash'])->first();
             if ($user && !empty($user->login)) {
                 $this->user = $user;
                 $this->updateDataAuthInSession();
@@ -84,7 +82,7 @@ class Auth
 
   
     private function getUserByLoginPassword($login, $pass) {
-        $user = Users::where('login', $login)->first();
+        $user = \Users::where('login', $login)->first();
         if ($user && password_verify($pass, $user->password_hash)) {
             return $user;
         } else NULL;
@@ -105,7 +103,7 @@ class Auth
     }
     
     public function isLoginExist($login) {
-        return Users::isLoginExist($login);  
+        return \Users::isLoginExist($login);  
     }
 
 }

@@ -7,7 +7,7 @@ class SimplePageController extends Controller
 
     public function actionIndex($params) {
 
-        echo $this->render('index', ['authForm' => $this->renderTemplate('auth', $params)]);
+        echo $this->render('index', $params);
     }
 
 

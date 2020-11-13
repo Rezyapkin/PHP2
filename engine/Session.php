@@ -6,10 +6,12 @@ class Session
 {
 
     protected $started = false;
+    protected $id = null;
 
     public function start() {
         if (!$this->started) {
             session_start();
+            $this->id = session_id();
             $this->started = true;
         }    
     }
@@ -22,8 +24,10 @@ class Session
         return property_exists($this, $name)  || isset($_SESSION[$name]);
     }
 
-    public function __set($name, $value) {  
-        $_SESSION[$name] = $value;
+    public function __set($name, $value) { 
+        if (key_exists($name, $_SESSION)) {
+            $_SESSION[$name] = $value;
+        }
     }
 
     public function deleteParam($param) {

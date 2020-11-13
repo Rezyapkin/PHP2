@@ -2,7 +2,6 @@
 
 namespace app\engine;
 
-use app\traits\Tsingletone;
 
 use app\interfaces\IDb;
 
@@ -16,8 +15,6 @@ class Db implements IDb
         'database' => 'geekbrains',
         'charset' => 'utf8'
     ];
-
-    use TSingletone;
 
     private $connection = null;
 
@@ -41,8 +38,6 @@ class Db implements IDb
 
     }
 
-    //SELECT * FROM products WHERE id = :id"
-    // ['id' => 1]
     private function query($sql, $params) {
         $proStatement = $this->getConnection()->prepare($sql);
         $proStatement->execute($params);
