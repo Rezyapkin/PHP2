@@ -62,6 +62,10 @@ class QueryBuilder implements IQueryBuider
         }
     }
 
+    protected function isCorrectField($field) {
+        return $this->model->isProperties($field) || array_search($field, $this->repo->getHiddenProps()) !== false; 
+    }
+
     protected function whereFunc($parameters, $connector = 'AND') {
         $count_par = count($parameters);
         if ($count_par < 2 || $count_par > 3) {
@@ -72,7 +76,7 @@ class QueryBuilder implements IQueryBuider
         $operator = ($count_par == 2) ? '=' : $parameters[1];
         $value = $parameters[$count_par - 1];
         
-        if (!$this->model->isProperties($field)) {
+        if (!$this->isCorrectField($field)) {
             throw new \Exception("Не существует поле {$field} для условной выборки!"); 
         }
 
@@ -94,7 +98,7 @@ class QueryBuilder implements IQueryBuider
     protected function orderFunc($parameters) {
         foreach ($parameters as $field) {
             $field_words = explode(" ",$field);
-            if (!$this->model->isProperties($field_words[0])) {
+            if (!$this->isCorrectField($field_words[0])) {
                 throw new \Exception("Не существует поля {$field_words[0]} для условной выборки!"); 
             }
         }
@@ -136,7 +140,7 @@ class QueryBuilder implements IQueryBuider
         foreach ($fields as $field) {
 
             $field_words = explode(" ", $field);
-            if ($this->model->isProperties($field_words[0])) {
+            if ($this->isCorrectField($field_words[0])) {
                 $desc = (count($field_words) > 1 && $field_words[1]='DESC') ? " DESC" : "";
                 $result[] = "`{$field_words[0]}`{$desc}";
                 continue;
@@ -145,7 +149,7 @@ class QueryBuilder implements IQueryBuider
             //Решил, что в полях fields разрешено использовать агрегирующие функции, поэтому проверим на них
             preg_match("/([a-z]+)\([\'\`]?([\*a-z]+)[\'\`]?\)/i", $field, $matches, PREG_OFFSET_CAPTURE);
             if (count($matches) == 3 && array_search($matches[1][0], static::AGR_FUNCTIONS) !== false) {
-                if ($this->model->isProperties($matches[2][0])) {
+                if ($this->isCorrectField($matches[2][0])) {
                     $result[] = "{$matches[1][0]}(`{$matches[2][0]}`) AS `{$matches[2][0]}`";    
                 } elseif ($matches[2][0]=="*")  {
                     $result[] = "{$matches[1][0]}(*) AS {$matches[1][0]}";
@@ -167,7 +171,7 @@ class QueryBuilder implements IQueryBuider
         $index = 0;
         $where_str = "";
         foreach ($where as $where_one) {
-            if (array_search($where_one['operator'], static::OPERATORS) === false || !$this->model->isProperties($where_one['field'])) {
+            if (array_search($where_one['operator'], static::OPERATORS) === false || !$this->isCorrectField($where_one['field'])) {
                 continue;
             }
             $param_name = "W_{$index}";

@@ -5,4 +5,4 @@
    <div class="product_item__price">{{ item.price }} &#8381;</div><a href="#" class="black-button btn-buy" data-id="{{ item.id }}">В корзину</a>
 </div>
 <hr>
-{{ feedback|raw }}
+{% include 'feedback.twig' %}

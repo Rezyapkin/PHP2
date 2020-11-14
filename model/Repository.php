@@ -52,6 +52,12 @@ abstract class Repository implements IRepository
         foreach ($entity->props as $key=>$value) {
             $params["{$key}"] = $entity->$key;
         }
+        
+        foreach ($this->getHiddenProps() as $prop) {
+            if ($this->$prop) {
+                $params["{$prop}"] = $this->$prop;  
+            }
+        }
 
         $columns = "`" . implode("`, `", array_keys($params)) . "`";
         $values = ":" . implode(", :", array_keys($params));
@@ -72,13 +78,14 @@ abstract class Repository implements IRepository
         $sets = [];
         $params = [];
         $result = true;
-
         foreach ($entity->props as $key=>$value) {
             if ($value) {
                 $params["{$key}"] = $entity->$key;
                 $sets[] = "`{$key}` = :{$key}";
             }    
         }
+
+
         if (isset($id) && count($sets) > 0) {
             $set_str = implode(", ", $sets);
             $sql = "UPDATE {$this->getTableName()} SET {$set_str} WHERE {$id_name} = '{$id}'";
@@ -103,6 +110,10 @@ abstract class Repository implements IRepository
     public function delete(Model $entity) {
         $sql = "DELETE FROM {$this->getTableName()} WHERE id = :id";
         return $this->db->execute($sql, ['id' => $entity->getKeyValue()])->rowCount();
+    }
+
+    public function getHiddenProps() {
+        return [];
     }
 
     abstract public function getEntityClass();

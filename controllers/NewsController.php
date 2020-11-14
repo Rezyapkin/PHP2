@@ -9,7 +9,7 @@ class NewsController extends Controller
     const PAGE_SIZE = 20;
 
     public function actionIndex() {
-        echo $this->render('news', ['page-size' => static::PAGE_SIZE]);
+        echo $this->render('news', ['page_size' => static::PAGE_SIZE]);
     }
 
     public function actionCard($params) {

@@ -44,6 +44,11 @@ class AuthController extends Controller
     }
 
     public function actionProfile($params) {
+        if (!\Auth::isAuth()) {
+            header('Location: /login');
+            Die();            
+        }
+        
         $profileInfo = [
             'login' => $params['login'],
             'userName' => $params['userName']

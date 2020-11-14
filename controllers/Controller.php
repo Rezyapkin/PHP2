@@ -58,15 +58,15 @@ class Controller implements IController
         }
     }
 
-    public function actionByIdCard($ClassName, $tmplName, $params) {
+    public function actionByIdCard($ClassName, $tmplName, $params, $pageParams = []) {
         $item = $ClassName::find($params['id']);
 
         if ($item) {
             $id = $item->getKeyFieldName();
             if ($item->$id) {
-                return $this->render($tmplName, [
+                return $this->render($tmplName, array_merge([
                     'item' => $item
-                    ]);
+                ], $pageParams));
             }
         }
 

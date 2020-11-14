@@ -18,7 +18,7 @@ class News extends Model
 
     public function __construct($title = null, $text = null)
     {
-        $this->title = $name;
+        $this->title = $title;
         $this->text = $text;
     }
 
@@ -26,7 +26,5 @@ class News extends Model
     public function getTableName() {
         return "news";
     }
-
-
 
 }

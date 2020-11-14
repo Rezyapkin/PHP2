@@ -10,11 +10,11 @@ class ProductController extends Controller
     const PAGE_SIZE = 10;
 
     public function actionIndex() {
-        echo $this->render('catalog', ['page-size' => static::PAGE_SIZE]);
+        echo $this->render('catalog', ['page_size' => static::PAGE_SIZE]);
     }
 
     public function actionCard($params) {
-        echo $this->actionByIdCard('\Products', 'card', $params);
+        echo $this->actionByIdCard('\Products', 'card', $params, ['groupId' => $params['id'], 'categoryFeedback' => 'product']);
     }
 
     public function actionApiDynamicList($params) {

@@ -11,3 +11,5 @@ Route::match(['POST', 'GET'], '/login','Auth.Login');
 Route::match(['POST', 'GET'], '/profile','Auth.Profile');
 Route::post('/register','Auth.Register');
 Route::get('/register','Auth.Login');
+Route::post('/api/feedback/{action}','Feedback.Api');
+Route::get('/feedback','Feedback.Index');

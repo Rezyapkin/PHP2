@@ -80,19 +80,29 @@ class DynamicList {
         return this.urlApi + '/' + action;
     }
 
-    addItem(id, data) 
+    async addItem(id, data, position = 'beforeend') 
     {
         if (!(id in this.items)) {
             this.items[id] = this.newItem(id, data);   
         } else {
-            Object.assign(this.items[id], data);      
+            Object.assign(this.items[id], data);    
         }
 
-        return this.items[id];
+        let itemDL = this.items[id];
+        if (itemDL.getElement()) {
+            await itemDL.updateElement();
+        } else {
+            this.elList.insertAdjacentHTML(position, itemDL.render());
+        } 
+        this.addElEventListeners(itemDL.getElementId());
+    }
+
+    addElEventListeners(id) {
+
     }
 
     deleteItem(id) {
-        this.items[id].remove();
+        this.items[id].getElement().remove();
         delete this.items[id];
     }
 
@@ -119,23 +129,22 @@ class DynamicList {
         `<p class="${style}" id="${this.messageId}">${message}</p>`);
     }
 
+    getJsonBody(count, offset) {
+        return {'count': count, 'offset': offset};
+    }
+
     async showItems(count, offset) {
         if (!this.doUpload) {
             this.doUpload = true;
             this.showMessage('Загрузка ...');
-            let answer = await application.postJson(this.getURLApi(), {'count': count, 'offset': offset});
+            let answer = await application.postJson(this.getURLApi(), this.getJsonBody(count, offset));
             if (!answer || answer.totalCount === undefined) {
                 this.showMessage('Не удалось загрузить элементы!');
             } else  {
                 this.deleteMessage();
                 for (let index in answer.items) {
                     let item = answer.items[index];
-                    let itemDL = this.addItem(item.id, item);
-                    if (itemDL.getElement()) {
-                        await itemDL.updateElement();
-                    } else {
-                        await this.elList.insertAdjacentHTML('beforeend',itemDL.render());
-                    }    
+                    this.addItem(item.id, item);
                 }
                 this.countItems = answer.totalCount;
             }
@@ -154,11 +163,17 @@ class DynamicList {
         }
     } 
 
-    async fillVisible() {
+    async fillVisible(minOne = true) {
+        if (minOne) {
+            await this.getNewPage(); 
+        }
+        
         while ((this.elList.offsetTop + this.elList.offsetHeight < window.innerHeight) && 
             this.mayBeLoad && 
             (this.countItems == -1 || Object.keys(this.items).length < this.countItems)) {
-            await this.getNewPage();
-        } 
+            
+                await this.getNewPage();   
+
+        };
     }
 }

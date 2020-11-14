@@ -4,7 +4,7 @@
 <script src="/js/catalog.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", event => {
-        catalog = new Products('catalog', {{ page_size }});
+        let catalog = new Products('catalog', {{ page_size }});
         catalog.fillVisible();
     });
 </script>
