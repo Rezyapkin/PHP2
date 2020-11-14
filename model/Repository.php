@@ -60,9 +60,10 @@ abstract class Repository implements IRepository
 
         if ($this->db->execute($sql, $params)) {
             $entity->setKeyValue($this->db->lastInsertId());
+            return true;
+        } else {
+            return false;
         }
-
-        return $this;
     }
 
     protected function update(Model $entity) {
@@ -70,6 +71,7 @@ abstract class Repository implements IRepository
         $id = $entity->getKeyValue();
         $sets = [];
         $params = [];
+        $result = true;
 
         foreach ($entity->props as $key=>$value) {
             if ($value) {
@@ -77,22 +79,25 @@ abstract class Repository implements IRepository
                 $sets[] = "`{$key}` = :{$key}";
             }    
         }
-
         if (isset($id) && count($sets) > 0) {
             $set_str = implode(", ", $sets);
             $sql = "UPDATE {$this->getTableName()} SET {$set_str} WHERE {$id_name} = '{$id}'";
             if ($this->db->execute($sql, $params)) {
                 $entity->clearProps();
+            } else {
+                $result = false;
             }
         }
+
+        return $result;
     }
 
 
     public function save(Model $entity) {
         if (is_null($entity->getKeyValue()))
-            $this->insert($entity);
+            return $this->insert($entity);
         else
-            $this->update($entity);
+            return $this->update($entity);
     }
 
     public function delete(Model $entity) {

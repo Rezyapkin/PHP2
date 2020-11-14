@@ -20,6 +20,44 @@ class AuthController extends Controller
         echo $this->render('auth', $params);
     }
 
+    protected function updateUserProfile($params) {
+        $result = [];
+        $user = \Auth::getUserByLoginPassword($params['login'], $params['current-password']);
+        if (isset($user)) {
+            $user->name = $params['name'];
+            if (isset($params['new-password'])) {
+                $user->setPasswordHash($params['new-password']);
+            }
+            if (\Users::save($user)) {
+                $result['message'] = 'Данные учетной записи успешно изменены';
+                $result['no_error'] = '_no';
+                \Auth::auth($params['login'], ($params['new-password']) ?: $params['current-password']);
+            } else {
+                $result['message'] = 'Произошла ошибка при обновлении данных';
+            };
+
+        } else {
+            $result['message'] = 'Не верный пароль';
+        }
+
+        return $result;
+    }
+
+    public function actionProfile($params) {
+        $profileInfo = [
+            'login' => $params['login'],
+            'userName' => $params['userName']
+        ];
+
+        if (isset($params['current-password']) && \Auth::getUserInfo()['login'] == $params['login']) {
+            //Пытаемся обновить профиль и результат присоединим к массиву паратмеров передаваемых в шаблон!
+            $profileInfo = array_merge($profileInfo, $this->updateUserProfile($params));
+        } 
+
+        echo $this->render('profile', $profileInfo);
+    }
+
+
     public function actionRegister($params) {
         $message = "";
         $header = "";

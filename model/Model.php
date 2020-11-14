@@ -14,7 +14,7 @@ abstract class Model
     protected $realatedModels = [];
 
     public function __set($name, $value) {
-        if (array_key_exists($name, $this->props)) {
+        if (array_key_exists($name, $this->props) && $value != $this->$name) {
             $this->clearInstanceInRM($name);
             $this->props[$name] = true;
             $this->$name = $value;

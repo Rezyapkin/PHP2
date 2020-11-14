@@ -13,7 +13,7 @@ class UsersRepository extends Repository
         if ($entity->props['login'] === True && $this->isLoginExist($entity->login)) {
             throw new \Exception("Пользователь с таким логином существует."); 
         } else {
-            parent::update($entity);
+            return parent::update($entity);
         }
     }
 
@@ -21,7 +21,7 @@ class UsersRepository extends Repository
         if ($this->isLoginExist($entity->login)) {
             throw new \Exception("Пользователь с таким логином существует."); 
         } else {
-            parent::insert($entity);
+            return parent::insert($entity);
         }
     }
 

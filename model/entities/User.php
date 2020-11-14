@@ -13,7 +13,7 @@ class User extends Model
     protected $cookie_hash;
     protected $is_admin;
 
-    protected $props = [
+    public $props = [
         'login' => false,
         'name' => false,
         'password_hash' => false,
@@ -26,11 +26,17 @@ class User extends Model
         $this->login = strtolower($login);
         $this->name = $name;
         $this->is_admin = false;
-        $this->setPasswordHash($password);
+        if (isset($password)) {
+            $this->setPasswordHash($password);
+        }
     }
 
     public function setPasswordHash($pass) {
-        return $this->password_hash = ($pass) ? password_hash($pass, PASSWORD_DEFAULT) : $pass; 
+        if (empty($pass)) {
+            throw new \Exception('Пароль не может быть пустым');
+        }
+        $this->password_hash = password_hash($pass, PASSWORD_DEFAULT); 
+        $this->props['password_hash'] = true;
     }
 
 

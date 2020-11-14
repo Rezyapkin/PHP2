@@ -81,7 +81,7 @@ class Auth
     }
 
   
-    private function getUserByLoginPassword($login, $pass) {
+    public function getUserByLoginPassword($login, $pass) {
         $user = \Users::where('login', $login)->first();
         if ($user && password_verify($pass, $user->password_hash)) {
             return $user;
@@ -96,11 +96,18 @@ class Auth
             $hash = ($save) ? uniqid(rand(), true) : "";  
             $this->updateHashUser($hash); 
             return true;
-        }
+        };
 
         return false;
     }
     
+    public function updateUserInfo() {
+        if (isset($this->user) && $this->user->getKeyValue()) {
+            $this->user = \Users::find($this->user->getKeyValue());
+            updateDataAuthInSession();
+        }
+    }
+
     public function isLoginExist($login) {
         return \Users::isLoginExist($login);  
     }

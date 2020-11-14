@@ -8,5 +8,6 @@ Route::post('/api/news/getItems','News.ApiDynamicList');
 Route::get('/news','News.Index');
 Route::get('/news/{id}','News.Card');
 Route::match(['POST', 'GET'], '/login','Auth.Login');
+Route::match(['POST', 'GET'], '/profile','Auth.Profile');
 Route::post('/register','Auth.Register');
 Route::get('/register','Auth.Login');
