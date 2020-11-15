@@ -17,10 +17,10 @@ class FeedbackController extends Controller
         if (isset($params['categoryFeedback'])) {
             \Feedback::setCategoty($params['categoryFeedback']);
         }
-        \Feedback::setGroupId($params['groupId']);
-        
         $query = \Feedback::orderBy('id DESC');
-        if (isset($params['groupId']) && \Feedback::getGroupFieldName()) {
+
+        if (\Feedback::getGroupFieldName()) {
+            \Feedback::setSystemProp(\Feedback::getGroupFieldName(), $params['groupId']);
             $query = $query->where(\Feedback::getGroupFieldName(), $params['groupId']);
         }
 

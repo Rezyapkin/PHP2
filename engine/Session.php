@@ -32,4 +32,8 @@ class Session
         unset($_SESSION[$param]);
     }
 
+    public function getId() {
+        return $this->id;
+    }
+
 }

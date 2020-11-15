@@ -63,7 +63,7 @@ class QueryBuilder implements IQueryBuider
     }
 
     protected function isCorrectField($field) {
-        return $this->model->isProperties($field) || array_search($field, $this->repo->getHiddenProps()) !== false; 
+        return $this->model->isProperties($field) || array_search($field, $this->repo->getSystemProps()) !== false; 
     }
 
     protected function whereFunc($parameters, $connector = 'AND') {
@@ -75,8 +75,7 @@ class QueryBuilder implements IQueryBuider
         $field = $parameters[0];
         $operator = ($count_par == 2) ? '=' : $parameters[1];
         $value = $parameters[$count_par - 1];
-        
-        if (!$this->isCorrectField($field)) {
+        if (!($this->isCorrectField($field))) {
             throw new \Exception("Не существует поле {$field} для условной выборки!"); 
         }
 
@@ -90,7 +89,6 @@ class QueryBuilder implements IQueryBuider
             'value' => $value,
             'connector' => $connector
         ];
-
         return $this;
     
     }
@@ -160,16 +158,9 @@ class QueryBuilder implements IQueryBuider
         return $result;
     }
 
-    //Формируем динамический запрос, возвращается массив из двух элементов ['sql' - текст запроса, 'params' - параметры]
-    public function getSQLAndParams($fields = [], $where = [], $limit = 0, $offset = 0) {
-        $fields = $this->getFieldsForQuery($fields);
-        $order = $this->getFieldsForQuery($this->order);
-
-        $where = array_merge($where, $this->where);
-
-        $query_params = [];
-        $index = 0;
+    protected function _getWhereStrAndParams($where, $index = 0) {    
         $where_str = "";
+        $query_params = [];
         foreach ($where as $where_one) {
             if (array_search($where_one['operator'], static::OPERATORS) === false || !$this->isCorrectField($where_one['field'])) {
                 continue;
@@ -181,16 +172,38 @@ class QueryBuilder implements IQueryBuider
             $query_params[$param_name] = $where_one["value"];
             $index++;
         }
+        return ['str' => $where_str, 'params' => $query_params];
+    }
+
+    public function getWhereStrAndParams($where) {    
+        $where_left = $this->_getWhereStrAndParams($where);
+        $where_right = $this->_getWhereStrAndParams($this->where, count($where_left['params']));
+        $query_params = array_merge($where_left['params'], $where_right['params']);
+        
+        if ($where_left['str'] === "" || $where_right['str'] === "") {
+            $where_str = $where_left['str'] . $where_right['str'];
+        } else {
+            $where_str = "({$where_left['str']}) AND ({$where_right['str']})";
+        }
         $where_str = ($where_str == "") ? "" : " WHERE {$where_str}";
+        return ['str' => $where_str, 'params' => $query_params];
+    }
+
+    //Формируем динамический запрос, возвращается массив из двух элементов ['sql' - текст запроса, 'params' - параметры]
+    public function getSQLAndParams($fields = [], $where = [], $limit = 0, $offset = 0) {
+        $fields = $this->getFieldsForQuery($fields);
+        $order = $this->getFieldsForQuery($this->order);
+
+        $whereStrAndParams = $this->getWhereStrAndParams($where);
 
         $fields_query = ($fields) ? implode(", ", $fields) : "*";
         $order_by = ($this->order) ? (" ORDER BY " . implode(", ", $this->order)) : "";
         $limit = ($limit > 0) ? (" LIMIT " . (int)$offset . ", " . (int)$limit)  : "";
-
+        
         return 
         [
-            "sql" => "SELECT {$fields_query} FROM {$this->repo->getTableName()} {$where_str}{$order_by}{$limit}",
-            "params" => $query_params
+            "sql" => "SELECT {$fields_query} FROM {$this->repo->getTableName()} {$whereStrAndParams['str']} {$order_by} {$limit}",
+            "params" => $whereStrAndParams['params']
         ];
     }
 

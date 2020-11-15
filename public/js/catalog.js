@@ -1,11 +1,11 @@
-class ProductItems extends ItemDynamicList {
+class ProductItem extends ItemDynamicList {
     renderTemplate() {
         return `
         <a class="product-item__link" href="/catalog/${this.id}">
              <img class="product_item__img" src="/images/products/${this.image}" alt="${this.name}" >
              <p>${this.name}</p>
         </a>
-        <div class="product_item__price">${this.price} &#8381;</div><a href="#" class="black-button btn-buy" data-id="${this.name}">В корзину</a>
+        <div class="product_item__price">${this.price} &#8381;</div><a href="#" class="black-button btn-buy" data-id="${this.id}">В корзину</a>
         `;
     }
 
@@ -16,8 +16,12 @@ class Products extends DynamicList {
         super(idList, pageSize, urlApi, itemClassName);
     }
 
+    addElEventListeners(id) {
+        application.addListenerToBtnBuy('#'+id+' .btn-buy');
+    }
+
     newItem(id, data) {
-        return new ProductItems(this.elList, id, data, this.itemClassName);
+        return new ProductItem(this.elList, id, data, this.itemClassName);
     }    
 
 }

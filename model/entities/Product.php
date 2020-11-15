@@ -28,11 +28,4 @@ class Product extends Model
         $this->image = $image;
     }
 
-
-    public function getTableName() {
-        return "products";
-    }
-
-
-
 }

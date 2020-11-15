@@ -7,5 +7,5 @@ interface IRepository
     public function getTableName();
     public function getDb();
     public function newQuery();
-    public function getHiddenProps();
+    public function getSystemProps();
 }

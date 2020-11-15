@@ -27,11 +27,12 @@ abstract class Model
         if (array_key_exists($name, $this->realatedModels) && $this->realatedModels[$name]['fieldName']) {
             if (!isset($this->realatedModels[$name]['instance'])) {
                 $className = ($this->realatedModels[$name]['className']) ?: $name;
-                if (!strpos($className,'\\')) {
+                if (strpos($className,'\\') === false) {
                     $className = MODEL_NAMESPACE . $className;
                 }
                 if (class_exists($className)) {
-                    $this->realatedModels[$name]['instance'] = $className::find($this->realatedModels[$name]['fieldName']);
+                    $fn = $this->realatedModels[$name]['fieldName'];
+                    $this->realatedModels[$name]['instance'] = $className::find($this->$fn);
                 }
             }
         
@@ -52,7 +53,7 @@ abstract class Model
 
     public function __isset($name)
     {
-        return $this->isProperties($name);     
+        return (array_key_exists($name, $this->realatedModels)) ?: $this->isProperties($name);     
     }
 
     protected function clearInstanceInRM($fieldName) {
@@ -75,6 +76,13 @@ abstract class Model
        foreach ($this->getFields() as $field) {
            $result[$field] = $this->$field;
         }
+
+        foreach (array_keys($this->realatedModels) as $field) {
+            if ($this->$field) {
+                $result[$field] = $this->$field->getDataFields();
+            }
+        }
+
         return $result;
     }
 

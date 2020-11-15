@@ -22,9 +22,4 @@ class News extends Model
         $this->text = $text;
     }
 
-
-    public function getTableName() {
-        return "news";
-    }
-
 }

@@ -9,7 +9,6 @@ class FeedbackRepository extends Repository
 {
     
     protected $category = "";
-    protected $groupId = "";
 
     protected const CATEGORIES = [
         'product' => 'product_id'
@@ -28,26 +27,10 @@ class FeedbackRepository extends Repository
     public function setCategoty($category) {
         if (array_key_exists($category, static::CATEGORIES)) {
             $this->category = $category;
+            $this->systemProps = [static::CATEGORIES[$category]];
         }
     }
 
-    public function __get($name) {
-        if ($name == static::CATEGORIES[$this->category]) {
-            return $this->groupId;
-        }
-    }
-
-    public function setGroupId($groupId) {
-        $this->groupId = $groupId;
-    }
-
-    public function getHiddenProps() {
-        if (isset($this->category)) {
-            return [static::CATEGORIES[$this->category]];
-        } else {
-            return [];
-        }
-    }
 
     public function getGroupFieldName() {
         return static::CATEGORIES[$this->category];

@@ -19,7 +19,7 @@
         {% endif %}    
     </div>
     <div class="header__cart">
-        <a id="header_cart" href="/cart">Корзина (<?=$count_in_cart?>)</a>
+        <a id="header_cart" href="/cart">Корзина ({{ countInCart|default(0) }})</a>
     </div> 
     </div>   
 </header>

@@ -30,7 +30,8 @@ class Controller implements IController
     public function setGlobalParams() {
         $this->globalParams = [
             "isAuth" => \Auth::isAuth(),
-            "isAdmin" => \Auth::isAdmin(),           
+            "isAdmin" => \Auth::isAdmin(),    
+            "countInCart" => \Cart::where('session_id',\Session::getId())->where('quantity','>',0)->orderBy('id DESC')->sum('quantity'),      
         ];
 
         if ($this->globalParams['isAuth']) {

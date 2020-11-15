@@ -10,3 +10,4 @@ App::bind('news', '\\app\\model\\repositories\\NewsRepository', true);
 App::bind('products', '\\app\\model\\repositories\\ProductsRepository', true);
 App::bind('users', '\\app\\model\\repositories\\UsersRepository', true);
 App::bind('feedback', '\\app\\model\\repositories\\FeedbackRepository', true);
+App::bind('cart', '\\app\\model\\repositories\\CartRepository', true);

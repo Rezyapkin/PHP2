@@ -1,0 +1,23 @@
+<h2>Корзина</h2>
+<div id="cart" class="cart">
+</div>
+<hr>
+<div class="total_cart" id="total_cart"></div>
+<div class="clearfix"></div>
+
+<div class="auth-form" id="make_order">
+<h3>Оформление заказа:</h3>
+<form action="" method="post">
+    <input type="text" name="name" placeholder="Ваше имя" required value="{{ userName }}">
+    <input type="text" placeholder="Ваш номер телефона" class="phone" name="phone" required>
+    <input type="text" placeholder="Адрес" name="address" required>
+    <button type="submit" class="black-button">Оформить заказ</button>   
+</form>
+</div>
+<script src="/js/cart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", event => {
+        let cart = new Cart('cart', {{ page_size }});
+        cart.fillVisible();
+    });
+</script>

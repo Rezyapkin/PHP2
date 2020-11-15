@@ -13,3 +13,5 @@ Route::post('/register','Auth.Register');
 Route::get('/register','Auth.Login');
 Route::post('/api/feedback/{action}','Feedback.Api');
 Route::get('/feedback','Feedback.Index');
+Route::get('/cart','Cart.Index');
+Route::post('/api/cart/{action}','Cart.Api');

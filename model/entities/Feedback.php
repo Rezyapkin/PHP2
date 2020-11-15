@@ -10,7 +10,7 @@ class Feedback extends Model
     protected $name;
     protected $feedback;   
 
-    public $props = [
+    protected $props = [
             'name' => false,
             'feedback' => false,
     ];
