@@ -101,7 +101,9 @@ class DynamicList {
 
     }
 
-    deleteItem(id) {
+
+
+    async deleteItem(id) {
         this.items[id].getElement().remove();
         delete this.items[id];
     }
@@ -167,7 +169,7 @@ class DynamicList {
         if (minOne) {
             await this.getNewPage(); 
         }
-        
+
         while ((this.elList.offsetTop + this.elList.offsetHeight < window.innerHeight) && 
             this.mayBeLoad && 
             (this.countItems == -1 || Object.keys(this.items).length < this.countItems)) {

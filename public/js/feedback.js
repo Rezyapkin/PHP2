@@ -21,9 +21,6 @@ class Feedback extends DynamicList {
         this.form = (idForm) ? document.getElementById(idForm) : null;
     }
 
-    addEventListeners() {
-        super.addEventListeners();
-    }
 
     addEditEventListener($func) {
         this.editEventListener = $func;

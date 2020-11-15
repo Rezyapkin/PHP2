@@ -38,13 +38,13 @@ class CartController extends Controller
                 $result['result'] = 'ok';
                 break;    
 
-            case 'delete': 
+            case 'deleteItem': 
                 if ($item) {
                     $item->quantity = 0;
                 }
                 break;
 
-            case 'add': 
+            case 'addItem': 
                 if ($item) {
                     $item->quantity++;
                 } elseif ($params['product_id']) {
@@ -55,7 +55,7 @@ class CartController extends Controller
                 };
                 break;
 
-            case 'sub': 
+            case 'subItem': 
                 if ($item) {
                     $item->quantity--;
                 }

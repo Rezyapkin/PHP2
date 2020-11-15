@@ -1,10 +1,10 @@
 <?php
 include "../config/const.php";
 
-use app\engine\{AutoLoad, Application};
-include ROOT_DIR . "/engine/Autoload.php";
+use app\engine\Application;
+//include ROOT_DIR . "/engine/Autoload.php";
 require_once '../vendor/autoload.php';
-spl_autoload_register([new Autoload(), 'loadClass']);
+//spl_autoload_register([new Autoload(), 'loadClass']);
 
 
 $app = new Application();
