@@ -18,3 +18,4 @@ Route::post('/api/cart/{action}','Cart.Api');
 Route::get('/admin','Admin.Index');
 Route::post('/api/orderList/{partOrders}/getItems','Shop.ApiOrdersList');
 Route::get('/order/{uId}','Shop.OrderInfo');
+Route::post('/api/order/chageStatus','Shop.ChangeStatus');

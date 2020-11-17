@@ -7,15 +7,6 @@ use app\model\entities\CartItem;
 class CartController extends Controller
 {
 
-    public function getQuery() {
-        $userInfo = \Auth::getUserInfo();
-        if (isset($userInfo)) {
-            $query = \Cart::where('user_id', $userInfo['userId']);
-        } else {
-            $query = \Cart::where('session_id', \Session::getId()); 
-        } 
-        return $query->where('quantity','>',0);
-    }
 
     public function actionIndex() {
         echo $this->render('cart', ['page_size' => \App::getConfig('pageSize')]);
@@ -24,7 +15,7 @@ class CartController extends Controller
 
     public function actionApi($params) {
         $result = [];
-        $query = $this->getQuery()->orderBy('id DESC');
+        $query = \Cart::getBaseQuery()->orderBy('id DESC');
 
         if (isset($params['id'])) {
             $item = $query->find($params['id']);
@@ -80,7 +71,7 @@ class CartController extends Controller
         }
         
         if (empty($result['error'])) {
-            $result['count'] = (int) $this->getQuery()->sum('quantity');
+            $result['count'] = (int) \Cart::getBaseQuery()->sum('quantity');
         }
 
         echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

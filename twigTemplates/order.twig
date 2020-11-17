@@ -20,20 +20,22 @@
             <p id="order_message"></p>
         </form>
     {% else %}
-        <p>Статус: <b>{{ status }}></b></p>    
+        <p>Статус: <b>{{ status }}</b></p>    
     {% endif %}    
     <hr>
     <h3>Состав заказа:</h3>
     <div>
+        {% set total = 0 %}
         {% for item in items %}
             <div class="cart__item">
                 <div>
-                    <a href="/catalog/{{ item.id }}">{{ item.name }}</a>
+                    <a href="/catalog/{{ item.id }}">{{ item.product.name }}</a>
                 </div>    
                 <div class="cart__item_right">    
-                    <div>{{ item.quantity }} X {{ item.price }} = {{ item.total }} &#8381;</div>
+                    <div>{{ item.quantity }} X {{ item.price }} = {{ item.price * item.quantity }} &#8381;</div>
                 </div>
             </div>
+            {% set total = total + item.price * item.quantity %}
         {% endfor %}
     </div>
     <p>Сумма: <b>{{ total }}  &#8381;</b></p></b></p>
@@ -42,33 +44,29 @@
 {% if isAdmin %}
 <script>
 
-$(document).ready(function() {
-    var elMessage = $("#order_message");
-    $("#status-change").on('click', function(evt){
-        var u_id = $("#order_u_id").val();
-        var status = $("#order_status").val();  
-        $.ajax({
-            url: "/api/shop/changeStatus",
-            type: "POST",
-            dataType : "json",
-            data:{
-                'u_id': u_id,
-                'status': status,
-            },
-            error: function() {elMessage.text("Что-то пошло не так...");},
-            success: function(answer){           
-            if (answer.result) {
-                elMessage.text("Статус заказа изменен"); 
-            }
-            if (answer.error) {
-                elMessage.text(answer.error);   
-            }	            			
-            }
-        });    
 
-        evt.preventDefault();
+    document.addEventListener("DOMContentLoaded", event => {
+        var elMessage = document.getElementById("order_message");
+        document.getElementById("status-change").addEventListener('click', async (evt) => {
+            let answer = await application.postJson("/api/order/chageStatus", 
+                {
+                    'uId': '{{ uId }}',
+                    'status': document.getElementById("order_status").value,
+                }
+            );
+            if (!answer || answer.error) {
+                elMessage.innerText = "Что-то пошло не так...";
+            } else  {
+                if (answer.result) {
+                    elMessage.innerText = "Статус заказа изменен"; 
+                }
+                if (answer.error) {
+                    elMessage.innerText = answer.error;   
+                }	
+            }
+            evt.preventDefault();
+        });
     });
-});
 
 </script>
 {% endif %}    

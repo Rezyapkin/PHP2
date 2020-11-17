@@ -31,7 +31,7 @@ class Controller implements IController
         $this->globalParams = [
             "isAuth" => \Auth::isAuth(),
             "isAdmin" => \Auth::isAdmin(),    
-            "countInCart" => \Cart::where('session_id',\Session::getId())->where('quantity','>',0)->orderBy('id DESC')->sum('quantity'),      
+            "countInCart" => \Cart::getBaseQuery()->sum('quantity'),      
         ];
 
         if ($this->globalParams['isAuth']) {
