@@ -6,10 +6,9 @@ use app\model\entities\Feedback;
 
 class FeedbackController extends Controller
 {
-    const PAGE_SIZE = 10;
 
     public function actionIndex() {
-        echo $this->render('feedback', ['page_size' => static::PAGE_SIZE]);
+        echo $this->render('feedback', ['page_size' => \App::getConfig('pageSize')]);
     }
 
     public function actionApi($params) {

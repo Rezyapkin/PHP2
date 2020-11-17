@@ -10,11 +10,9 @@ class Router
 
     public $routes = [];
     protected $request;
-    protected $renderer;
 
-    public function __construct(Request $request, IRenderer $renderer) {
+    public function __construct(Request $request) {
         $this->request = $request;
-        $this->renderer = $renderer;
     }
 
     public function __call($method, $parameters) {
@@ -41,42 +39,19 @@ class Router
         return $params;
     }
 
-    function getDefaultControllerAndAction() {
-        return [
-            'name' => CONTROLLER_NAMESPACE . 'Controller',
-            'method' => 'errorAction'
-        ];        
-    }
-
-    protected function checkLogout($params) {
-        if (key_exists('logout', $params)) {
-            \Auth::logout();
-        }
-    }
-
-    protected function action() {
-        $default = $this->getDefaultControllerAndAction();
-        $controllerName = $default['name'];
-        $method = $default['method'];
-        $params = $this->request->params;
-
+    protected function getControllerNameAndParams() {
         foreach ($this->routes as $route) {
             if ($route['method'] !== $this->request->method)  {
                 continue;
             }
 
             if ($this->checkUriWithRegEx($route['regEx'])) {
-                $controllerName = $route['controllerName'];
-                $method = $route['controllerMethod'];
-                $params = array_merge($params, $this->getParamsForControllerAction($route));
-                break;
+                return [
+                    'controller' => $route['controller'],
+                    'params' => $this->getParamsForControllerAction($route)
+               ];
             }
         }
-
-        $this->checkLogout($params);
-        $controller = new $controllerName($this->renderer);
-        $controller->$method($params);
-
     }
 
     protected function getRexExAndParams($uri) {
@@ -90,21 +65,11 @@ class Router
         return compact("regEx", "paramsName");
     } 
 
-    protected function match($methods, $uri, $controllerAndMethod, $renderer = '') {
+    protected function match($methods, $uri, $controllerAndMethod) {
         foreach ($methods as $method) {
             $ar = explode('.', $controllerAndMethod);
             if (count($ar) != 2) {
                 throw new \Exception('Верный формат последнего параметра: Controller.Method');
-            }
-
-            $controllerClass = CONTROLLER_NAMESPACE . ucfirst($ar[0]) . "Controller";
-            if (!class_exists($controllerClass)) {
-                throw new \Exception("Ошибка, контроллер {$controllerClass} не существует.");
-            }
-
-            $action = 'action'. ucfirst($ar[1]);
-            if (!method_exists($controllerClass, $action)) {
-                throw new \Exception("Ошибка, метод {$ar[1]} в контроллере {$controllerClass} не существует.");
             }
 
             $up_method = strtoupper($method);
@@ -113,8 +78,7 @@ class Router
                 $this->routes[] = [
                     'method' => $up_method,
                     'regEx' => $result['regEx'],
-                    'controllerName' => $controllerClass,
-                    'controllerMethod' => $action,
+                    'controller' => $controllerAndMethod,
                     'paramsName' => $result['paramsName'],
                 ];
             }

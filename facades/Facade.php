@@ -1,19 +1,21 @@
 <?php
 
+use app\engine\Application;
+
 abstract class Facade {
     
     protected static $app;
 
     public static function setFacadeApplication($app) {
-        static::$app = $app;
+        self::$app = $app;
     }
 
     public static function __callStatic($method, $parameters) {
         if (!isset(static::$app)) {
-            return;
+            self::$app = new Application;
         }
         
-        $instance = static::$app->make(static::getFacadeAccesor());
+        $instance = self::$app->make(static::getFacadeAccesor());
         if ($instance && is_callable(array($instance, $method))) {
             return call_user_func_array([$instance, $method], $parameters);
         } else {

@@ -2,17 +2,14 @@
 
 namespace app\engine;
 
-
 use app\interfaces\IRenderer;
 
 class TwigRender implements IRenderer
 {
 
-    protected const TEMPLATE_DIR = ROOT_DIR . "/twigTemplates";
-
     public function __construct()
     {
-         $loader = new \Twig\Loader\FilesystemLoader(static::TEMPLATE_DIR);
+         $loader = new \Twig\Loader\FilesystemLoader(\App::getConfig('templates_dir'));
          $this->twig = new \Twig\Environment($loader);
 
     }    

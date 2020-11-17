@@ -7,8 +7,6 @@ use app\model\entities\CartItem;
 class CartController extends Controller
 {
 
-    const PAGE_SIZE = 10;
-
     public function getQuery() {
 
         $query = \Cart::where('session_id',\Session::getId())->where('quantity','>',0)->orderBy('id DESC');
@@ -16,7 +14,7 @@ class CartController extends Controller
     }
 
     public function actionIndex() {
-        echo $this->render('cart', ['page_size' => static::PAGE_SIZE]);
+        echo $this->render('cart', ['page_size' => \App::getConfig('pageSize')]);
     }
 
 

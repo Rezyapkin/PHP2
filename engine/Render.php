@@ -6,12 +6,10 @@ use app\interfaces\IRenderer;
 
 class Render implements IRenderer
 {
-    protected const TEMPLATE_DIR = ROOT_DIR . "/views";
-
     public function renderTemplate($template, $params = []) {
         ob_start();
         extract($params);
-        $templatePath = (static::TEMPLATE_DIR) . '/' . $template . ".php";
+        $templatePath = (App::getConfig('templates_dir') . $template . ".php");
         if (file_exists($templatePath)) {
             include $templatePath;
         }

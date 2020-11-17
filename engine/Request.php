@@ -8,14 +8,13 @@ class Request {
     protected $method;
     protected $params = [];
 
-    function __construct() {
+    public function __construct() {
         $this->requestString = explode('?',$_SERVER['REQUEST_URI'])[0];
         $this->method = $_SERVER['REQUEST_METHOD']; 
         $this->fillParams();
-
     }
 
-    function fillParams() {
+    private function fillParams() {
         $this->params = $_REQUEST;
 
         $data = json_decode(file_get_contents('php://input'));
@@ -29,7 +28,11 @@ class Request {
 
     }
 
-    function __get($name) {
+    public function getParams() {
+        return $this->params;
+    } 
+   
+    public function __get($name) {
         if (isset($this->$name)) {
             return $this->$name;
         }

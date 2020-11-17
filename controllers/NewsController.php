@@ -6,10 +6,9 @@ use app\model\News;
 
 class NewsController extends Controller
 {
-    const PAGE_SIZE = 20;
 
     public function actionIndex() {
-        echo $this->render('news', ['page_size' => static::PAGE_SIZE]);
+        echo $this->render('news', ['page_size' => \App::getConfig('pageSize')]);
     }
 
     public function actionCard($params) {

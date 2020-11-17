@@ -2,25 +2,75 @@
 
 namespace app\engine;
 
+use app\traits\TSingletone;
+
 class Application extends Container
 {
+    protected static $app;
+    protected $config = [];
 
     public function __construct() {
         $this->bind('app', get_class($this), true);
     }
 
-    public function start() {
-        $auth = $this->make('auth'); 
-        $session = $this->make('session');
-        $cart = $this->make('cart');
-        $session->start();   
-        $cart->setSystemProp('session_id',$session->getId());
-        $userInfo = $auth->getUserInfo();
-        if (isset($userInfo)) {
-            $cart->setSystemProp('user_id',$userInfo['userId']);
-        };
-        $this->make('router')->action();  
+    protected function loadConfigs() {
+        include_once $this->config['root_dir'] . "/config/binding.php";
+        include_once $this->config['root_dir'] . "/routes/map.php";        
     }
 
+    
+    public function getConfig($name = '') {
+        return (isset($name)) ? $this->config[$name] : $this->config;
+    }
+
+    public function callMethodController($name, $params) {
+        $nameAndMethod = explode('.', $name);
+        if (count($nameAndMethod) != 2) {
+            throw new \Exception("Первый параметр метода имеет не верный формат");
+        } 
+
+        $controllerClass = $this->config['controllers_namespaces'] . ucfirst($nameAndMethod[0]) . "Controller";
+        if (!class_exists($controllerClass)) {
+            throw new \Exception("Ошибка, контроллер {$controllerClass} не существует.");
+        }
+    
+        $action = 'action'. ucfirst($nameAndMethod[1]);
+        if (!method_exists($controllerClass, $action)) {
+            throw new \Exception("Ошибка, метод {$nameAndMethod[1]} в контроллере {$controllerClass} не существует.");
+        }
+    
+        $this->make($controllerClass)->$action($params);
+
+    }
+
+    public function run($config) {
+        $this->config = $config;
+        $this->loadConfigs();
+
+        \Session::start();
+        $params = \Request::getParams();
+
+        if (array_key_exists('logout', $params)) {
+            \Auth::logout();
+        } else {
+            $userInfo = \Auth::getUserInfo();
+            if (isset($userInfo)) {
+                \Cart::setSystemProp('user_id', $userInfo['userId']);
+            };
+        }
+        \Cart::setSystemProp('session_id', \Session::getId()); 
+
+
+        $controllerInfo = \Route::getControllerNameAndParams() ?: [
+            'controller' => $this->config['defaultController'],
+            'params' => []
+        ];
+
+        $this->callMethodController(
+            $controllerInfo['controller'], 
+            array_merge($params, $controllerInfo['params'])
+        );
+
+    }
 
 }
