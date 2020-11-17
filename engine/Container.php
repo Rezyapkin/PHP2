@@ -17,7 +17,8 @@ class Container
         }
 
         if ($singleton && !($concrete instanceof \Closure) && class_exists($concrete)) {
-            $this->singletons[$concrete] = null; 
+            $reflector = new \ReflectionClass($concrete);
+            $this->singletons[$reflector -> getName()] = null; 
         }
 
         $this->bindings[$abstract] = $concrete;
@@ -151,7 +152,7 @@ class Container
                 if (class_exists($type) || $type !== $concrete) {
                     $instances[$param->name] = $this->build($type);
                     $this->setSingleton($instances[$param->name]);
-                }    
+                } 
             }
         } catch (\Exception $e) {
             throw $e;

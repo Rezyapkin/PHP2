@@ -52,7 +52,7 @@ class QueryBuilder implements IQueryBuider
             case 'where':
                 return $this->whereFunc($parameters, $connector);
             case 'orderBy':
-                return $this->orderFunc($parameters);
+                return $this->orderFunc($parameters);             
             default:
                 if (method_exists($this, $method)) {
                     return call_user_func_array([$this, $method], $parameters);    

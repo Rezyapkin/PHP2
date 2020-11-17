@@ -11,6 +11,7 @@ App::bind('products', 'app\\model\\repositories\\ProductsRepository', true);
 App::bind('users', 'app\\model\\repositories\\UsersRepository', true);
 App::bind('feedback', 'app\\model\\repositories\\FeedbackRepository', true);
 App::bind('cart', 'app\\model\\repositories\\CartRepository', true);
+App::bind('orders', 'app\\model\\repositories\\OrderRepository', true);
 App::bind(\app\engine\Db::class, 'db');
 App::bind('db', function ($app) {
     $config = $app->getConfig('db');

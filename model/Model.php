@@ -8,13 +8,19 @@ abstract class Model
 {
     protected $keyFieldName = 'id';    
     protected $props = [];
+    protected $protectedProps = [];
 
     // Через это свойство реализуем связь один-к-одному с другими моделями
     //  ['model' => ['fieldName', 'className', 'instance']] 
     protected $realatedModels = [];
 
     public function __set($name, $value) {
-        if (array_key_exists($name, $this->props) && $value != $this->$name) {
+        if (
+            array_key_exists($name, $this->props) && 
+            $value != $this->$name && 
+            array_search($name, $this->protectedProps)
+            ) {
+            
             $this->clearInstanceInRM($name);
             $this->props[$name] = true;
             $this->$name = $value;
@@ -71,13 +77,15 @@ abstract class Model
         }
     }
  
-   public function getDataFields() {
+   public function getDataFields($fields=[]) {
        $result = [];
        foreach ($this->getFields() as $field) {
+           if (count($fields) !== 0 && array_search($field, $fields) === false) continue; 
            $result[$field] = $this->$field;
         }
 
         foreach (array_keys($this->realatedModels) as $field) {
+            if (count($fields) !== 0 || array_search($field, $fields) !== false) continue; 
             if ($this->$field) {
                 $result[$field] = $this->$field->getDataFields();
             }

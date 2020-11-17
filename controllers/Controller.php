@@ -74,12 +74,12 @@ class Controller implements IController
         return $this->errorAction();
     }
 
-    public function getJSONDynamicList($queryDB, $params) {
+    public function getJSONDynamicList($queryDB, $params, $fields=[]) {
         $count = $queryDB->count();   
         $list = $queryDB->get($params['count'], $params['offset']);
         $items = [];
         foreach ($list as $item) {
-            $items[] = $item->getDataFields();
+            $items[] = $item->getDataFields($fields);
             if (!end($items)['id']) {
                 $id = $item->getKeyFieldName();
                 end($items)['id'] = $item->$id;
