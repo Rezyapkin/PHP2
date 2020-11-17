@@ -4,5 +4,5 @@ namespace app\interfaces;
 
 interface IController
 {
-    public function errorAction();
+    public function actionError();
 }

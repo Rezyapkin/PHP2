@@ -7,6 +7,7 @@ class Container
     protected $bindings = [];
 
     protected $singletons = [];
+    protected $instatces = [];
 
     protected $buildStack = [];
 
@@ -14,10 +15,18 @@ class Container
         if (is_null($concrete)) {
             $concrete = $abstract;
         }
-        $this->bindings[$abstract] = $concrete;
-        if ($singleton) {
+
+        if ($singleton && !($concrete instanceof \Closure) && class_exists($concrete)) {
             $this->singletons[$concrete] = null; 
         }
+
+        $this->bindings[$abstract] = $concrete;
+    }
+
+    protected function createClosure($className) {
+        return \Closure::bind(function ($app) use ($className) {
+            return $app->getSingleton($className) ?: new $className;
+        } , null);
     }
 
     public function singleton($abstract, $concrete = null) {
@@ -31,25 +40,63 @@ class Container
 
     public function make($abstract) {
         $this->buildStack = [];
-        $concrete = $this->getConcrete($abstract);
-        $result = $this->build($concrete);
+        $result = $this->build($abstract);
         
         if (isset($result)){
-            $this->setSingleton($concrete, $result);
+            $this->setSingleton($result);
         } 
-
+ 
         return $result;
     }
 
-        public function build($concrete) {
+    protected function addToBuildStack($new) {
+        $this->buildStack[] = $new;
+        if (count($this->buildStack) > 20) {
+            throw new \Exception("Ошибка, переполнен стек bindings экземпляра класса.");
+        }
+    }
+
+    public function fixResultBuild($abstract, $instance) {
+        array_pop($this->buildStack);
+        if (!class_exists($abstract)) 
+        {
+            $this->$instances[$abstract] = $instance;
+        }
+        return $instance;
+    }
+
+    public function build($abstract) {
+        $this->addToBuildStack($abstract);
+        
+        $concrete = $this->getConcrete($abstract);  
+
+        if ($concrete instanceof \Closure) {
+            if (isset($this->instances[$abstract])) {
+                array_pop($this->buildStack);
+                return $this->instances[$abstract];
+            }
+            return $this->fixResultBuild($abstract, $concrete($this));
+        }
+
+        if (key_exists($concrete, $this->bindings)) {
+            $result = $this->build($concrete);   
+            array_pop($this->buildStack);         
+            return $result;
+        }
+
+        if (isset($this->instances[$abstract])) {
+            array_pop($this->buildStack);
+            return $this->instances[$abstract];
+        } 
 
         if ($concrete == get_class($this)) {
+            array_pop($this->buildStack);
             return $this;
         }
      
         if (isset($this->singletons[$concrete])) {
             array_pop($this->buildStack);
-            return $this->singletons[$concrete];
+            return $this->singletons[$concrete ];
         }
 
         try {
@@ -65,8 +112,7 @@ class Container
         $constructor = $reflector->getConstructor();
 
         if (is_null($constructor)) {
-            array_pop($this->buildStack);
-            return new $concrete;
+            return $this->fixResultBuild($abstract, new $concrete);
         }
 
         $dependencies = $constructor->getParameters();
@@ -79,31 +125,32 @@ class Container
             throw $e;
         }
 
-        array_pop($this->buildStack);
-        return $instance;
+        return $this->fixResultBuild($abstract, $instance);
     }
 
-    protected function setSingleton($className, $instance) {
+    protected function setSingleton($instance) {
+        $className = get_class($instance);
         if (array_key_exists($className, $this->singletons)) {
             $this->singletons[$className] = $instance;   
         }
 
     }
 
+    public function getSingleton($className) {
+        return (array_key_exists($className, $this->singletons)) ? $this->singletons[$className] = $instance : NULL;   
+    }
+
     protected function resolveDependencies($dependencies)
     {
-        if (count($this->buildStack) > 10) {
-            throw new \Exception("Ошибка, переполнен стек bindings экземпляра класса App.");
-        }
         $instances = [];
         try {
             foreach ($dependencies as $param) {
                 $type = $param->getType()->getName();
                 $this->buildStack[] = $type;
                 $concrete = $this->getConcrete($type);
-                if (class_exists($concrete)) {
-                    $instances[$param->name] = $this->build($concrete);
-                    $this->setSingleton($concrete, $instances[$param->name]);
+                if (class_exists($type) || $type !== $concrete) {
+                    $instances[$param->name] = $this->build($type);
+                    $this->setSingleton($instances[$param->name]);
                 }    
             }
         } catch (\Exception $e) {

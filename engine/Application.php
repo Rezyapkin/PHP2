@@ -62,7 +62,7 @@ class Application extends Container
 
 
         $controllerInfo = \Route::getControllerNameAndParams() ?: [
-            'controller' => $this->config['defaultController'],
+            'controller' => $this->config['defaultAction'],
             'params' => []
         ];
 

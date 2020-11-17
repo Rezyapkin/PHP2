@@ -7,16 +7,21 @@ use app\interfaces\IDb;
 
 class Db implements IDb
 {
-    private $config = [
-        'driver' => 'mysql',
-        'host' => 'localhost',
-        'login' => 'root',
-        'password' => 'root',
-        'database' => 'geekbrains',
-        'charset' => 'utf8'
-    ];
+    private $config;
 
     private $connection = null;
+
+    public function __construct($driver, $host, $login, $password, $database, $charset = "utf8") {
+        $this->config = [
+            'driver' => $driver,
+            'host' => $host,
+            'login' => $login,
+            'password' => $password,
+            'database' => $database,
+            'charset' => $charset
+        ];
+
+    }
 
     private function getConnection() {
         if (is_null($this->connection)) {

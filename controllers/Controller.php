@@ -40,7 +40,7 @@ class Controller implements IController
     }
 
 
-    public function errorAction() {
+    public function actionError() {
         header('HTTP/1.0 404 Not Found');
         header('Status: 404 Not Found');
         echo $this->render('404', []);
