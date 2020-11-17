@@ -43,6 +43,15 @@ class Application extends Container
 
     }
 
+    public function initCart() {
+        $userInfo = \Auth::getUserInfo();
+        if (isset($userInfo)) {
+            \Cart::setSystemProp('user_id', $userInfo['userId']);
+        } else {
+            \Cart::setSystemProp('session_id', \Session::getId()); 
+        } 
+    }
+
     public function run($config) {
         $this->config = $config;
         $this->loadConfigs();
@@ -52,14 +61,9 @@ class Application extends Container
 
         if (array_key_exists('logout', $params)) {
             \Auth::logout();
-        } else {
-            $userInfo = \Auth::getUserInfo();
-            if (isset($userInfo)) {
-                \Cart::setSystemProp('user_id', $userInfo['userId']);
-            };
-        }
-        \Cart::setSystemProp('session_id', \Session::getId()); 
+        };
 
+        $this->initCart();
 
         $controllerInfo = \Route::getControllerNameAndParams() ?: [
             'controller' => $this->config['defaultAction'],

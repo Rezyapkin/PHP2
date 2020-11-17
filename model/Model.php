@@ -18,7 +18,7 @@ abstract class Model
         if (
             array_key_exists($name, $this->props) && 
             $value != $this->$name && 
-            array_search($name, $this->protectedProps)
+            array_search($name, $this->protectedProps) === false
             ) {
             
             $this->clearInstanceInRM($name);

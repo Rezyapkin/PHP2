@@ -9,6 +9,19 @@ use app\model\entities\Order;
 class OrderRepository extends Repository
 {
 
+    
+    protected $statuses = [
+        'Новый',
+        'Подтвержден',
+        'Оплачен',
+        'Выдан',
+        'Отменен'
+    ];
+
+    public function getAvaliableStatuses() {
+        return $this->statuses;
+    }
+
     public function getEntityClass()
     {
         return Order::class;

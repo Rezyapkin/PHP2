@@ -16,4 +16,5 @@ Route::get('/feedback','Feedback.Index');
 Route::get('/cart','Cart.Index');
 Route::post('/api/cart/{action}','Cart.Api');
 Route::get('/admin','Admin.Index');
-Route::post('/api/orderList/{partOrders}/getItems','Admin.ApiOrdersList');
+Route::post('/api/orderList/{partOrders}/getItems','Shop.ApiOrdersList');
+Route::get('/order/{uId}','Shop.OrderInfo');

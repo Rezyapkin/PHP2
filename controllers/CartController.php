@@ -8,9 +8,13 @@ class CartController extends Controller
 {
 
     public function getQuery() {
-
-        $query = \Cart::where('session_id',\Session::getId())->where('quantity','>',0)->orderBy('id DESC');
-        return $query;
+        $userInfo = \Auth::getUserInfo();
+        if (isset($userInfo)) {
+            $query = \Cart::where('user_id', $userInfo['userId']);
+        } else {
+            $query = \Cart::where('session_id', \Session::getId()); 
+        } 
+        return $query->where('quantity','>',0);
     }
 
     public function actionIndex() {
@@ -20,7 +24,7 @@ class CartController extends Controller
 
     public function actionApi($params) {
         $result = [];
-        $query = $this->getQuery();
+        $query = $this->getQuery()->orderBy('id DESC');
 
         if (isset($params['id'])) {
             $item = $query->find($params['id']);

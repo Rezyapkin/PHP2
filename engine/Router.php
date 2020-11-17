@@ -61,7 +61,7 @@ class Router
         foreach ($matches as $match) {
             $paramsName[] = $match[1];
         }
-        $regEx = preg_replace("/{[A-Za-z]+[A-Za-z0-9]*}/", "([A-Za-z0-9]+)", $regEx);
+        $regEx = preg_replace("/{[A-Za-z]+[A-Za-z0-9]*}/", "([A-Za-z0-9\.]+)", $regEx);
         return compact("regEx", "paramsName");
     } 
 

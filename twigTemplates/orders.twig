@@ -1,7 +1,13 @@
 {% if error %}
     <h2><?=$error?></h2>
 {% else %}
-    <h2>Перечень заказов</h2>
+    <h2>
+        {% if partOrders != 'all' %}
+            Мои заказы
+        {% else %}
+            Перечень заказов
+        {% endif %}
+    </h2>
     <table cellspacing="0">
         <tr>
             <th>Дата/время</th>

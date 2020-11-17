@@ -21,4 +21,5 @@ class CartRepository extends Repository
     {
         return "cart";
     }
+
 }

@@ -5,7 +5,7 @@ class ProductItem extends ItemDynamicList {
              <img class="product_item__img" src="/images/products/${this.image}" alt="${this.name}" >
              <p>${this.name}</p>
         </a>
-        <div class="product_item__price">${this.price} &#8381;</div><a href="#" class="black-button btn-buy" data-id="${this.id}">В корзину</a>
+        <div class="product_item__price">${this.price} &#8381;</div><a href="javascript:void(0)" class="black-button btn-buy" data-id="${this.id}">В корзину</a>
         `;
     }
 

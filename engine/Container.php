@@ -42,7 +42,6 @@ class Container
     public function make($abstract) {
         $this->buildStack = [];
         $result = $this->build($abstract);
-        
         if (isset($result)){
             $this->setSingleton($result);
         } 
@@ -59,7 +58,8 @@ class Container
 
     public function fixResultBuild($abstract, $instance) {
         array_pop($this->buildStack);
-        if (!class_exists($abstract)) 
+
+        if (strpos($abstract,'\\') !== false) 
         {
             $this->$instances[$abstract] = $instance;
         }
@@ -79,7 +79,7 @@ class Container
             return $this->fixResultBuild($abstract, $concrete($this));
         }
 
-        if (key_exists($concrete, $this->bindings)) {
+        if (array_key_exists($concrete, $this->bindings)) {
             $result = $this->build($concrete);   
             array_pop($this->buildStack);         
             return $result;

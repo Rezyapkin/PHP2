@@ -96,7 +96,6 @@ abstract class Repository implements IRepository
                 $sets[] = "`{$key}` = :{$key}";
             }    
         }
-
         if ($entity->getKeyValue() && count($sets) > 0) {
             $set_str = implode(", ", $sets);
             $where = [];
