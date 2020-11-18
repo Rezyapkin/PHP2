@@ -16,7 +16,7 @@ class NewsController extends Controller
     }
 
     public function actionApiDynamicList($params) {
-        $query = \News::orderBy('date DESC');
+        $query = \News::orderBy('id DESC');
         echo $this->getJSONDynamicList($query, $params);
     }
 

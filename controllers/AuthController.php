@@ -25,7 +25,7 @@ class AuthController extends Controller
         $user = \Auth::getUserByLoginPassword($params['login'], $params['current-password']);
         if (isset($user)) {
             $user->name = $params['name'];
-            if (isset($params['new-password'])) {
+            if ($params['new-password']) {
                 $user->setPasswordHash($params['new-password']);
             }
             if (\Users::save($user)) {
