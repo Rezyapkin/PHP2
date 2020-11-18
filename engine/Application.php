@@ -44,12 +44,11 @@ class Application extends Container
     }
 
     public function initCart() {
+        \Cart::setSystemProp('session_id', \Session::getId()); 
         $userInfo = \Auth::getUserInfo();
         if (isset($userInfo)) {
             \Cart::setSystemProp('user_id', $userInfo['userId']);
-        } else {
-            \Cart::setSystemProp('session_id', \Session::getId()); 
-        } 
+        }
     }
 
     public function run($config) {

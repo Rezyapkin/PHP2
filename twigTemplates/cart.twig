@@ -11,7 +11,8 @@
     <input type="text" name="name" placeholder="Ваше имя" required value="{{ userName }}">
     <input type="text" id="tel" placeholder="Ваш номер телефона" class="phone" name="phone" required>
     <input type="text" placeholder="Адрес" name="address" required>
-    <button type="submit" class="black-button">Оформить заказ</button>   
+    <div class="error_message">{{ error }}</div>
+    <button type="submit" class="black-button">Оформить заказ</button>
 </form>
 </div>
 <script src="/js/cart.js"></script>

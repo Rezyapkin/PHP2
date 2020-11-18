@@ -4,6 +4,26 @@ namespace app\controllers;
 
 class ShopController extends Controller
 {
+  
+
+    public function actionChangeStatus($params) {
+        if (!\Auth::isAdmin()) {
+            $this->actionError();
+            return;
+        } 
+        $order = \Orders::where('uId', $params['uId'])->first();
+        if ($order && $params['uId'] && $order->id) {
+            $order->status = $params['status'];
+            if (\Orders::save($order)) {
+                $answer = ['result' => 'ok'];
+            } else {
+                $answer = ['error' => 'Не удалось изменить статус!'];
+            };
+        } else {
+            $answer = ['error' => 'Не найден заказ по Id!'];
+        }  
+        echo json_encode($answer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);  
+    }
 
     public function actionOrderInfo($params) {
 
@@ -17,26 +37,6 @@ class ShopController extends Controller
             $params['error'] = 'error';
         }    
         echo $this->render('order', $params);
-    }
-
-    public function actionChangeStatus($params) {
-        if (!\Auth::isAdmin()) {
-            $this->actionError();
-            return;
-        } 
-
-        $order = \Orders::where('uId', $params['uId'])->first();
-        if ($order && $params['uId'] && $order->id) {
-            $order->status = $params['status'];
-            if (\Orders::save($order)) {
-                $answer = ['result' => 'ok'];
-            } else {
-                $answer = ['error' => 'Не удалось изменить статус!'];
-            };
-        } else {
-            $answer = ['error' => 'Не найден заказ по Id!'];
-        }  
-        echo json_encode($answer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);  
     }
 
     public function actionApiOrdersList($params) {

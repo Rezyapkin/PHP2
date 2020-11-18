@@ -33,6 +33,7 @@ class Db implements IDb
         return $this->connection;
     }
 
+   
     private function prepareDsnString() {
          return sprintf("%s:host=%s;dbname=%s;charset=%s",
             $this->config['driver'],
@@ -75,6 +76,18 @@ class Db implements IDb
 
     public function queryAll($sql, $params = []) {
         return $this->query($sql, $params)->fetchAll();
+    }
+
+    public function beginTransaction() {
+        $this->getConnection()->beginTransaction();
+    }
+
+    public function commit() {
+        $this->getConnection()->commit();   
+    }
+
+    public function rollBack() {
+        $this->getConnection()->rollBack();
     }
 
 }

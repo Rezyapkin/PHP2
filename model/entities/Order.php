@@ -42,13 +42,15 @@ class Order extends Model
     */
 
     protected function fillProtectedProps() {
-        $this->u_id = uniqid(rand(), true); 
+        $this->date = date("Y-m-d H:i:s" , time());
+        $this->uId = uniqid(rand(), true); 
     }
 
-    public function __construct($name = null, $phone = null, $addrees = null, $status=null, $userId = null) 
+    public function __construct($name = null, $phone = null, $address = null, $userId = null, $status = 'Новый') 
     {
         $this->name = $name;
         $this->phone = $phone;
+        $this->address = $address;
         $this->userId = $userId;
         $this->status = $status;
         $this->fillProtectedProps();

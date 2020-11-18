@@ -59,9 +59,9 @@ class Container
     public function fixResultBuild($abstract, $instance) {
         array_pop($this->buildStack);
 
-        if (strpos($abstract,'\\') !== false) 
+        if (strpos($abstract,'\\') === false) 
         {
-            $this->$instances[$abstract] = $instance;
+            $this->instances[$abstract] = $instance;
         }
         return $instance;
     }

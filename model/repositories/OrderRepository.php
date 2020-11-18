@@ -28,6 +28,7 @@ class OrderRepository extends Repository
     }
 
     protected function insert(Model $entity) {
+        $entity->date = date("Y-m-d H:i:s", time());
         return parent::insert($entity);
     }     
 

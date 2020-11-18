@@ -31,6 +31,10 @@ class Request {
     public function getParams() {
         return $this->params;
     } 
+
+    public function getMethod() {
+        return $this->method;
+    }
    
     public function __get($name) {
         if (isset($this->$name)) {
