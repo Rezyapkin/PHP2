@@ -78,6 +78,7 @@ abstract class Repository implements IRepository
         $values = ":" . implode(", :", array_keys($params));
 
         $sql = "INSERT INTO {$this->getTableName()} ({$columns}) VALUES ({$values})";
+        
         if ($this->db->execute($sql, $params)) {
             $entity->setKeyValue($this->db->lastInsertId());
             return true;

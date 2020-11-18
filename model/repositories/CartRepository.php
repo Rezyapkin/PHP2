@@ -22,13 +22,14 @@ class CartRepository extends Repository
         return "cart";
     }
 
-        public function getBaseQuery() {
+    public function getBaseQuery() {
         $userInfo = \Auth::getUserInfo();
-        if (isset($userInfo)) {
+        if (isset($userInfo) && $userInfo['userId']) {
             $query = $this->newQuery()->where('user_id', $userInfo['userId']);
         } else {
             $query = $this->newQuery()->where('session_id', \Session::getId()); 
         } 
+
         return $query->where('quantity','>',0);
     }
 

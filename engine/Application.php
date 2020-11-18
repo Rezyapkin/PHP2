@@ -46,7 +46,7 @@ class Application extends Container
     public function initCart() {
         \Cart::setSystemProp('session_id', \Session::getId()); 
         $userInfo = \Auth::getUserInfo();
-        if (isset($userInfo)) {
+        if (isset($userInfo) && $userInfo['userId']) {
             \Cart::setSystemProp('user_id', $userInfo['userId']);
         }
     }

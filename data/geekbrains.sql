@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Ноя 05 2020 г., 17:02
+-- Время создания: Ноя 18 2020 г., 18:45
 -- Версия сервера: 10.3.22-MariaDB
--- Версия PHP: 7.1.33
+-- Версия PHP: 7.4.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,8 +40,9 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`id`, `product_id`, `quantity`, `user_id`, `session_id`) VALUES
-(11, 4, 2, 0, 'a0j1d788u6ivqfldismku134qam1hf5v'),
-(12, 3, 5, 0, 'a0j1d788u6ivqfldismku134qam1hf5v');
+(105, 66, 4, 0, 'vrga5sonhkjhhmjv7m65a70vp8s3ogep'),
+(106, 68, 3, 0, 'vrga5sonhkjhhmjv7m65a70vp8s3ogep'),
+(107, 65, 6, 0, 'vrga5sonhkjhhmjv7m65a70vp8s3ogep');
 
 -- --------------------------------------------------------
 
@@ -66,7 +67,9 @@ INSERT INTO `feedback` (`id`, `name`, `feedback`) VALUES
 (6, 'Админ', 'Привет мир'),
 (10, 'Супер автор', 'Отличный отзыв 11'),
 (16, 'Стив Джобс', 'Привет мир'),
-(17, 'Стив Джобс', 'Последний отзыв');
+(17, 'Дмитрий', 'Не последний отзыв'),
+(35, 'Иван Андреевич', 'Отличный отзыв'),
+(36, 'Обучающийся', 'Из-за того, что поменялась архитектура пришлось с помощью костылей старые отзывы прикручивать. 1');
 
 -- --------------------------------------------------------
 
@@ -91,7 +94,11 @@ INSERT INTO `feedback_product` (`id`, `name`, `feedback`, `product_id`) VALUES
 (4, 'Михаил', 'Отличный ноут. Отзывы поправил.', 3),
 (5, 'Вася', 'Люблю Mac', 5),
 (9, 'Дмитрий', 'Привет Димон', 4),
-(10, 'Стив Джобс', 'Купил ноут. Все супер', 3);
+(10, 'Стив Джобс', 'Купил ноут. Все супер', 3),
+(25, 'Купивший', 'Немного ноутов на сайте с ценой до 50000. Этот оптимальный по цене/качеству.', 66),
+(26, 'Стив Джобс', 'Еще отзыв', 66),
+(27, 'Стив Джобс', 'Новый отзыв', 66),
+(28, 'Саша', 'Привет 1', 3);
 
 -- --------------------------------------------------------
 
@@ -156,19 +163,19 @@ INSERT INTO `news` (`id`, `title`, `text`) VALUES
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp(),
-  `user_id` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
   `status` enum('Новый','Подтвержден','Оплачен','Выдан','Отменен') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Новый',
   `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` bigint(8) NOT NULL,
   `address` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `u_id` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
+  `uId` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Дамп данных таблицы `orders`
 --
 
-INSERT INTO `orders` (`id`, `date`, `user_id`, `status`, `name`, `phone`, `address`, `u_id`) VALUES
+INSERT INTO `orders` (`id`, `date`, `userId`, `status`, `name`, `phone`, `address`, `uId`) VALUES
 (3, '2020-10-17 17:36:18', 0, 'Отменен', 'Дмитрий', 7, 'lllll', '7667690415f8affca5a42b2.56442037'),
 (7, '2020-10-17 18:08:40', 0, 'Оплачен', 'Дмитрий', 79771175704, 'Москва', '15470743565f8b08f8260fa3.69380903'),
 (8, '2020-10-17 18:35:42', 0, 'Новый', 'Дмитрий', 79771175704, 'Москва, Верхняя Красносельская 10к7а, 120', '7831725235f8b0f4e165908.35482044'),
@@ -181,9 +188,16 @@ INSERT INTO `orders` (`id`, `date`, `user_id`, `status`, `name`, `phone`, `addre
 (15, '2020-10-17 19:00:24', 1, 'Новый', 'Миша', 79111111111, 'Заберу сам', '14544876635f8b151848b2f1.50470674'),
 (16, '2020-10-17 19:01:04', 1, 'Выдан', 'Стив Джобс', 79999999999, '9', '1843035125f8b1540ed53e3.24931597'),
 (17, '2020-10-17 22:20:42', 3, 'Оплачен', 'Вася', 79843334343, 'Васин адрес', '482715095f8b440a46bc88.23095635'),
-(18, '2020-10-17 22:34:58', 1, 'Выдан', 'Стив Джобс', 79543343543, 'США', '6343891065f8b47620ffdd3.86066331'),
-(19, '2020-10-18 16:20:36', 3, 'Подтвержден', 'Василий Иванович', 79999999999, 'Новый Адрес', '4069972035f8c4124678d23.98108290'),
-(20, '2020-10-22 12:02:12', 1, 'Новый', 'Стив Джобс', 79771111111, '-', '5514604465f914a94ca2f59.28723275');
+(18, '2020-10-17 22:34:58', 1, 'Подтвержден', 'Стив Джобс', 79543343543, 'США', '6343891065f8b47620ffdd3.86066331'),
+(19, '2020-10-18 16:20:36', 3, 'Выдан', 'Василий Иванович', 79999999999, 'Новый Адрес', '4069972035f8c4124678d23.98108290'),
+(20, '2020-10-22 12:02:12', 1, 'Новый', 'Стив Джобс', 79771111111, '-', '5514604465f914a94ca2f59.28723275'),
+(21, '2020-11-18 16:50:19', 1, 'Новый', 'Стив Джобс', 777777, '888', '9176217485fb5269b888838.72564984'),
+(22, '2020-11-18 17:05:10', 1, 'Новый', 'Стив Джобс', 71234567789, 'Домой', '19172724135fb52a1687ed08.27634983'),
+(26, '2020-11-18 17:08:46', 1, 'Новый', 'Стив Джобс', 78888, '888', '8086820555fb52aee4b7285.63727739'),
+(27, '2020-11-18 17:10:34', 1, 'Новый', 'Стив Джобс', 78888, '888', '15049038445fb52b5aafa171.66606121'),
+(28, '2020-11-18 17:12:12', 1, 'Новый', 'Стив Джобс', 78888, '888', '7475044545fb52bbc71e1a0.63071010'),
+(29, '2020-11-18 17:13:16', 1, 'Новый', 'Стив Джобс', 78888, '888', '12080192045fb52bfc374a77.52645429'),
+(30, '2020-11-18 17:14:32', 1, 'Подтвержден', 'Стив Джобс', 79484832999, 'Новая улица', '17328063675fb52c48a80ee4.58106387');
 
 -- --------------------------------------------------------
 
@@ -193,8 +207,8 @@ INSERT INTO `orders` (`id`, `date`, `user_id`, `status`, `name`, `phone`, `addre
 
 CREATE TABLE `order_items` (
   `id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
+  `orderId` int(11) NOT NULL,
+  `productId` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `price` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -203,7 +217,7 @@ CREATE TABLE `order_items` (
 -- Дамп данных таблицы `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
+INSERT INTO `order_items` (`id`, `orderId`, `productId`, `quantity`, `price`) VALUES
 (4, 3, 3, 15, 49990),
 (5, 3, 4, 3, 79990),
 (6, 3, 5, 2, 59990),
@@ -234,7 +248,15 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (44, 19, 5, 19, 59990),
 (45, 19, 4, 5, 79990),
 (46, 20, 3, 7, 49990),
-(47, 20, 4, 16, 79990);
+(47, 20, 4, 16, 79990),
+(48, 29, 69, 5, 56060),
+(49, 29, 3, 5, 49990),
+(50, 29, 68, 1, 47910),
+(51, 29, 3, 6, 49990),
+(52, 30, 69, 5, 56060),
+(53, 30, 3, 5, 49990),
+(54, 30, 68, 1, 47910),
+(55, 30, 3, 6, 49990);
 
 -- --------------------------------------------------------
 
@@ -289,8 +311,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `login`, `name`, `password_hash`, `cookie_hash`, `last_action`, `is_admin`) VALUES
-(1, 'admin', 'Стив Джобс', '$2y$10$Tu4VWMKlDkq5Lkhz3liKL.6rbAKxs0IDMdmexD44pzn3wgWChCavC', '', '2020-10-15 06:37:24', b'1'),
-(3, 'vasya', 'Вася', '$2y$10$4ZDj9KyPZ56Un5KDw6WEHeguaDYS4g5QrKtV0Q3KyLwNf3x0jO1au', '9262738935f8c414506ef47.65101352', '2020-10-17 19:20:05', b'0');
+(1, 'admin', 'Администратор', '$2y$10$5WKMYg9MUNS6BThn4gHtLuoZlK3N5IcVNnYXRSVNt1FSh9eJCUovK', '', '2020-10-15 06:37:24', b'1'),
+(3, 'vasya', 'Вася', '$2y$10$4ZDj9KyPZ56Un5KDw6WEHeguaDYS4g5QrKtV0Q3KyLwNf3x0jO1au', '9262738935f8c414506ef47.65101352', '2020-10-17 19:20:05', b'0'),
+(4, 'test2', 'Вася', '$2y$10$AIN2fMls4LB7V69ZwTwxHuia9l5RMmkOJYe/7LqdAX4M9bo5rpPPe', NULL, '2020-11-12 09:08:40', b'0'),
+(5, 'www', 'Василий1', '$2y$10$ZaUFeGObVSnmSKnRon6c3OcGL2.SkHjQ4aPJQN7y47vxhaZ2ZtlSS', '', '2020-11-13 21:38:54', b'0');
 
 --
 -- Индексы сохранённых таблиц
@@ -332,15 +356,15 @@ ALTER TABLE `news`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `u_id` (`u_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD UNIQUE KEY `u_id` (`uId`),
+  ADD KEY `user_id` (`userId`);
 
 --
 -- Индексы таблицы `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`,`product_id`);
+  ADD KEY `order_id` (`orderId`,`productId`);
 
 --
 -- Индексы таблицы `products`
@@ -363,19 +387,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT для таблицы `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT для таблицы `feedback_product`
 --
 ALTER TABLE `feedback_product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT для таблицы `gallery`
@@ -393,13 +417,13 @@ ALTER TABLE `news`
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT для таблицы `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT для таблицы `products`
@@ -411,7 +435,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
