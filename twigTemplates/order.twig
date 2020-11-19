@@ -29,7 +29,7 @@
         {% for item in items %}
             <div class="cart__item">
                 <div>
-                    <a href="/catalog/{{ item.id }}">{{ item.product.name }}</a>
+                    <a href="/catalog/{{ item.product.id }}">{{ item.product.name }}</a>
                 </div>    
                 <div class="cart__item_right">    
                     <div>{{ item.quantity }} X {{ item.price }} = {{ item.price * item.quantity }} &#8381;</div>
